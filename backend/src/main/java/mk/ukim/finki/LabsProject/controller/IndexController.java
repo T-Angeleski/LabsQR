@@ -17,7 +17,7 @@ public class IndexController {
 
     @GetMapping("/")
     public String getIndexPage() {
-        return "Hello from the index page!";
+        return "Hello from the index ddd!";
 
     }
 
@@ -30,6 +30,12 @@ public class IndexController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return null;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "image/png");
+
+        return new ResponseEntity<>(qrCode.getQrCode(), headers, HttpStatus.OK);
+
+
     }
 }
