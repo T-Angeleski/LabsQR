@@ -3,6 +3,7 @@ package mk.ukim.finki.LabsProject.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mk.ukim.finki.LabsProject.model.QRCode.QRCode;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
