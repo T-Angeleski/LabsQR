@@ -25,8 +25,6 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
-    private String subject; // TODO: Implement model class for this field
-    private String qrCode;
     private LocalDateTime createdAt;
     private Integer durationInMinutes;
 
@@ -36,8 +34,12 @@ public class Session {
     @OneToMany(mappedBy = "session")
     private List<StudentSession> studentSessions = List.of();
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Subject subject;
+
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(createdAt.plusMinutes(durationInMinutes));
     }
+
 
 }

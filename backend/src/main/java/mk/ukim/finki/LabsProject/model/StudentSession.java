@@ -25,6 +25,9 @@ public class StudentSession {
     @ManyToOne
     private Session session;
 
-    @ManyToOne
+    @OneToOne
     private User student;
+
+    @OneToOne()
+    private QRCode qrCode;
 }
