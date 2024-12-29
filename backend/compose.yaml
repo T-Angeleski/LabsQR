@@ -1,7 +1,22 @@
 services:
-  postgres:
+  backend:
+    image: spring-backend:latest
+    container_name: backend
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/timski
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin123
+
+  db:
     image: postgres:15
-    container_name: postgres-timski
+    container_name: db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin123
@@ -10,19 +25,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  backend:
-    image: spring-backend
-    container_name: backend
-    build:
-      context: .
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/timski
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: admin123
 volumes:
   postgres_data:
