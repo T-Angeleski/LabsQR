@@ -22,11 +22,11 @@ import java.util.UUID;
 public class Session {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private LocalDateTime createdAt;
-    private Integer durationInMinutes;
+    private int durationInMinutes;
 
     @ManyToOne
     private User teacher;
@@ -40,6 +40,5 @@ public class Session {
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(createdAt.plusMinutes(durationInMinutes));
     }
-
 
 }

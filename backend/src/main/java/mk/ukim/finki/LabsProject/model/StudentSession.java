@@ -3,7 +3,6 @@ package mk.ukim.finki.LabsProject.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mk.ukim.finki.LabsProject.model.QRCode.QRCode;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,9 +18,10 @@ import java.util.UUID;
 public class StudentSession {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private LocalDateTime joinedAt;
+    private boolean attendanceChecked;
 
     @ManyToOne
     private Session session;
@@ -29,6 +29,6 @@ public class StudentSession {
     @OneToOne
     private User student;
 
-    @OneToOne()
+    @OneToOne
     private QRCode qrCode;
 }
