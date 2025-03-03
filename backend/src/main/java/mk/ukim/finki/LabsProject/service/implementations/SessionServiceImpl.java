@@ -1,5 +1,6 @@
 package mk.ukim.finki.LabsProject.service.implementations;
 
+import lombok.AllArgsConstructor;
 import mk.ukim.finki.LabsProject.model.Session;
 import mk.ukim.finki.LabsProject.repository.SessionRepository;
 import mk.ukim.finki.LabsProject.service.interfaces.SessionService;
@@ -9,14 +10,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@AllArgsConstructor
 @Service
 public class SessionServiceImpl implements SessionService {
 
     private final SessionRepository sessionRepository;
-
-    public SessionServiceImpl(SessionRepository sessionRepository) {
-        this.sessionRepository = sessionRepository;
-    }
 
     @Override
     public List<Session> getAllSessions() {

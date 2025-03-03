@@ -1,12 +1,8 @@
 package mk.ukim.finki.LabsProject.model;
 
-import com.google.zxing.WriterException;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import mk.ukim.finki.LabsProject.util.QRCodeGenerator;
-
-import java.io.IOException;
 import java.util.UUID;
 
 @Entity
