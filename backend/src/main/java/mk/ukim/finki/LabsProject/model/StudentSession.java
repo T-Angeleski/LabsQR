@@ -26,9 +26,12 @@ public class StudentSession {
     @ManyToOne
     private Session session;
 
-    @OneToOne
+    @ManyToOne
     private User student;
 
-    @OneToOne
+    @OneToOne(mappedBy = "studentSession")
     private QRCode qrCode;
+
+    @OneToOne(mappedBy = "studentSession")
+    private Grade grade;
 }

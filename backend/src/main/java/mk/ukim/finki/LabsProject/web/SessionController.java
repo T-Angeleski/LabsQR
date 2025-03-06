@@ -1,5 +1,7 @@
 package mk.ukim.finki.LabsProject.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import mk.ukim.finki.LabsProject.model.Session;
 import mk.ukim.finki.LabsProject.service.interfaces.SessionService;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/sessions")
+@Tag(name = "Session Management")
 public class SessionController {
     private final SessionService sessionService;
 
@@ -18,6 +21,7 @@ public class SessionController {
     }
 
     @GetMapping("/sessions")
+    @Operation(summary = "Get all sessions", description = "Returns a list of all available sessions")
     public ResponseEntity<List<Session>> getSessions() {
         return ResponseEntity.ok(sessionService.getAllSessions());
     }
