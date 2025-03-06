@@ -35,8 +35,8 @@ public class User {
     @OneToMany(mappedBy = "teacher")
     private List<Session> sessions = List.of();
 
-    @OneToOne()
-    private StudentSession studentSession;
+    @OneToMany(mappedBy = "student")
+    private List<StudentSession> studentSessions = List.of();
 
     public User(String name, String email, String password, Role role, @Nullable String index) {
         this.name = name;

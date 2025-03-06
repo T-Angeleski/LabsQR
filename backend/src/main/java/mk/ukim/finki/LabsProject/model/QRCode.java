@@ -13,7 +13,7 @@ public class QRCode {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne()
+    @OneToOne
     private StudentSession studentSession;
 
     private byte[] qrCode;
