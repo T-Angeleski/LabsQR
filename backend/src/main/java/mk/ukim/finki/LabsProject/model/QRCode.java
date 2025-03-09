@@ -1,5 +1,6 @@
 package mk.ukim.finki.LabsProject.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ public class QRCode {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @JsonBackReference // References back to StudentSession
     @OneToOne
     private StudentSession studentSession;
 

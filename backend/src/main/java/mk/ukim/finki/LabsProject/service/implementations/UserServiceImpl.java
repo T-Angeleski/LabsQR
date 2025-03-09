@@ -2,10 +2,12 @@ package mk.ukim.finki.LabsProject.service.implementations;
 
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.LabsProject.model.User;
+import mk.ukim.finki.LabsProject.model.enums.Role;
 import mk.ukim.finki.LabsProject.repository.UserRepository;
 import mk.ukim.finki.LabsProject.service.interfaces.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -33,4 +35,15 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(studentId)
                 .orElseThrow(() -> new IllegalArgumentException("Student not found"));
     }
+
+    public List<User> getUsersByRole(Role role) {
+        return userRepository.findByRole(role);
+    }
+
+    @Override
+    public List<User> findByRole(Role role) {
+        return userRepository.findByRole(role);
+    }
+
+   
 }

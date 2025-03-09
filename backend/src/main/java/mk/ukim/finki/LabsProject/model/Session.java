@@ -1,6 +1,8 @@
 package mk.ukim.finki.LabsProject.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,9 +30,11 @@ public class Session {
     private LocalDateTime createdAt;
     private int durationInMinutes;
 
+    @JsonBackReference("teacher-session")
     @ManyToOne
     private User teacher;
 
+    @JsonManagedReference("session-studentSession")
     @OneToMany(mappedBy = "session")
     private List<StudentSession> studentSessions = List.of();
 

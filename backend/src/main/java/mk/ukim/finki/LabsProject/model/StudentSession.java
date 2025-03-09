@@ -1,5 +1,7 @@
 package mk.ukim.finki.LabsProject.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,15 +25,19 @@ public class StudentSession {
     private LocalDateTime joinedAt;
     private boolean attendanceChecked;
 
+    @JsonBackReference("session-studentSession")
     @ManyToOne
     private Session session;
 
+    @JsonBackReference("student-studentSession")
     @ManyToOne
     private User student;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "studentSession")
     private QRCode qrCode;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "studentSession")
     private Grade grade;
 }

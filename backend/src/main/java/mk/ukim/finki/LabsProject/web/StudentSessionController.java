@@ -24,9 +24,22 @@ public class StudentSessionController {
     private final UserService userService;
 
     @PostMapping("/join/{sessionId}/student/{studentId}")
-    public ResponseEntity<StudentSession> joinSession(@PathVariable UUID sessionId, @PathVariable UUID studentId) {
-        User student = userService.getStudentById(studentId);
-        Session session = sessionService.getSessionById(sessionId);
+    public ResponseEntity<StudentSession> joinSession(
+        @PathVariable String sessionId,
+        @PathVariable String studentId
+    ) {
+
+        UUID sessionUuid;
+        UUID studentUuid;
+        try {
+            sessionUuid = UUID.fromString(sessionId);
+            studentUuid = UUID.fromString(studentId);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid UUID format");
+        }
+
+        User student = userService.getStudentById(studentUuid);
+        Session session = sessionService.getSessionById(sessionUuid);
 
         return ResponseEntity.ok(studentSessionService.createStudentSession(student, session));
     }

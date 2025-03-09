@@ -4,7 +4,7 @@
 PROFILE=${1:-postgres}
 
 echo "Building the backend with profile: $PROFILE"
-./mvnw clean package -DskipTests -Dspring.profiles.active=$PROFILE
+mvn clean package -DskipTests -Dspring.profiles.active=$PROFILE
 
 # Start the backend locally (if H2) or with Docker Compose (if Postgres)
 if [ "$PROFILE" == "h2" ]; then

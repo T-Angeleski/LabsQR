@@ -1,5 +1,6 @@
 package mk.ukim.finki.LabsProject.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -32,9 +33,12 @@ public class User {
     @Nullable
     private String index;
 
+
+    @JsonManagedReference("teacher-session")
     @OneToMany(mappedBy = "teacher")
     private List<Session> sessions = List.of();
 
+    @JsonManagedReference("student-studentSession")
     @OneToMany(mappedBy = "student")
     private List<StudentSession> studentSessions = List.of();
 

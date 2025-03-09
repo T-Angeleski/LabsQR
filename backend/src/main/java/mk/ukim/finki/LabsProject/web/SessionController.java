@@ -32,7 +32,9 @@ public class SessionController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Session> createSession(Session session) {
-        return ResponseEntity.ok(sessionService.createSession(session));
+    public ResponseEntity<Session> createSession(@RequestBody Session session) {
+
+        Session createdSession = sessionService.createSession(session);
+        return ResponseEntity.ok(createdSession);
     }
 }
