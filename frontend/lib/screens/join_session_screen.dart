@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/session_detail_screen.dart';
+import 'dart:convert';
 
 import '../service/session_service.dart';
 
@@ -23,7 +25,7 @@ class _JoinSessionScreenState extends State<JoinSessionScreen> {
       return;
     }
 
-    const studentId = '9e691e30-9561-4c56-9b3c-9de1a5819d98';
+    const studentId = '3ce62b17-1577-4495-b793-dc9959e5e651';
 
     try {
       final response = await _sessionService.joinSession(sessionId, studentId);
@@ -31,10 +33,19 @@ class _JoinSessionScreenState extends State<JoinSessionScreen> {
       if (!mounted) return;
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Joined session successfully!')),
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SessionDetailsScreen(
+              qrCodeBase64: responseData['qrCode'],
+              teacherUrl: responseData['teacherUrl'],
+              joinedAt: responseData['joinedAt'],
+              attendanceChecked: responseData['attendanceChecked'],
+            ),
+          ),
         );
-        Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to join session: ${response.body}')),

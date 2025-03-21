@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/student_sessions_screen.dart';
 import '../service/session_service.dart';
 import '../models/session.dart';
 
@@ -42,6 +43,16 @@ class _SessionsScreenState extends State<SessionsScreen> {
                 return ListTile(
                   title: Text('Session ID: ${session.id}'),
                   subtitle: Text('Duration: ${session.durationInMinutes} minutes'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StudentSessionsScreen(
+                          sessionId: session.id,
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             );

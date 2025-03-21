@@ -18,6 +18,7 @@ public class QRCode {
     @OneToOne
     private StudentSession studentSession;
 
+    @Lob
     private byte[] qrCode;
 
 }

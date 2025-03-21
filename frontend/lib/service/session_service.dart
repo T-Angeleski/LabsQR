@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/session.dart';
+import '../models/student_session.dart';
 import '../models/subject.dart';
 import '../models/teacher.dart';
 
@@ -17,17 +18,16 @@ class SessionService {
   }
 
   Future<List<Session>> fetchSessions() async {
-    final response = await http.get(
-      Uri.parse('http://10.0.2.2:8080/api/sessions/sessions'),
-    );
+    final response = await http.get(Uri.parse('http://10.0.2.2:8080/api/sessions/sessions'));
 
     if (response.statusCode == 200) {
-      List<dynamic> sessionsJson = jsonDecode(response.body);
-      return sessionsJson.map((json) => Session.fromJson(json)).toList();
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Session.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load sessions');
+      throw Exception('Failed to load sessions: ${response.body}');
     }
   }
+
 
   Future<http.Response> joinSession(String sessionId, String studentId) async {
     return await http.post(
@@ -35,6 +35,19 @@ class SessionService {
       headers: {'Content-Type': 'application/json'},
     );
   }
+
+  Future<StudentSession> getStudentSessionById(String sessionId) async {
+    final response = await http.get(
+      Uri.parse('http://10.0.2.2:8080/api/student-sessions/$sessionId'),
+    );
+
+    if (response.statusCode == 200) {
+      return StudentSession.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load student session: ${response.body}');
+    }
+  }
+
 
   Future<List<Teacher>> fetchTeachers() async {
     final response = await http.get(Uri.parse('http://10.0.2.2:8080/api/users/teachers'));
@@ -53,6 +66,17 @@ class SessionService {
       return subjectsJson.map((json) => Subject.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load subjects');
+    }
+  }
+
+  Future<List<StudentSession>> fetchStudentSessions(String sessionId) async {
+    final response = await http.get(Uri.parse('http://10.0.2.2:8080/api/student-sessions/$sessionId'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => StudentSession.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load student sessions');
     }
   }
 }

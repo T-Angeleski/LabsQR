@@ -1,6 +1,7 @@
 package mk.ukim.finki.LabsProject.service.implementations;
 
 import lombok.AllArgsConstructor;
+import mk.ukim.finki.LabsProject.model.QRCode;
 import mk.ukim.finki.LabsProject.model.Session;
 import mk.ukim.finki.LabsProject.model.StudentSession;
 import mk.ukim.finki.LabsProject.model.User;
@@ -10,6 +11,7 @@ import mk.ukim.finki.LabsProject.service.interfaces.StudentSessionService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,4 +42,26 @@ public class StudentSessionServiceImpl implements StudentSessionService {
 
         return session.getStudentSessions();
     }
+
+    @Override
+    public StudentSession getStudentSessionById(UUID studentSessionId) {
+
+        StudentSession s = studentSessionRepository.findById(studentSessionId)
+        .orElseThrow(() -> new IllegalArgumentException("Session not found"));
+
+        return s;
+    }
+
+
+
+    @Override
+    public void saveStudentSession(StudentSession studentSession) {
+        studentSessionRepository.save(studentSession);
+    }
+
+    @Override
+    public List<StudentSession> getStudentSessionsBySessionId(UUID sessionUuid) {
+        return studentSessionRepository.findBySessionId(sessionUuid);
+    }
+
 }

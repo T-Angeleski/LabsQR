@@ -34,10 +34,11 @@ public class StudentSession {
     private User student;
 
     @JsonManagedReference
-    @OneToOne(mappedBy = "studentSession")
+    @OneToOne(mappedBy = "studentSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private QRCode qrCode;
 
     @JsonManagedReference
-    @OneToOne(mappedBy = "studentSession")
+    @OneToOne(mappedBy = "studentSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private Grade grade;
 }
+
