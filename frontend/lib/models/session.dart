@@ -18,7 +18,8 @@ class Session {
       'id': id,
       'createdAt': createdAt,
       'durationInMinutes': durationInMinutes,
-      'studentSessions': studentSessions?.map((session) => session.toJson()).toList(),
+      'studentSessions':
+          studentSessions?.map((session) => session.toJson()).toList(),
     };
   }
 
@@ -29,8 +30,9 @@ class Session {
       durationInMinutes: json['durationInMinutes'] ?? 0,
       studentSessions: json['studentSessions'] != null
           ? (json['studentSessions'] as List)
-          .map((studentSessionJson) => StudentSession.fromJson(studentSessionJson))
-          .toList()
+              .map((studentSessionJson) =>
+                  StudentSession.fromJson(studentSessionJson))
+              .toList()
           : null,
     );
   }

@@ -30,7 +30,6 @@ class StudentSession {
     };
   }
 
-
   factory StudentSession.fromJson(Map<String, dynamic> json) {
     return StudentSession(
       id: json['id'] ?? 'unknown',

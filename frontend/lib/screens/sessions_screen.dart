@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/student_sessions_screen.dart';
-import '../service/session_service.dart';
-import '../models/session.dart';
+import 'package:frontend/service/session_service.dart';
+import 'package:frontend/models/session.dart';
 
 class SessionsScreen extends StatefulWidget {
   const SessionsScreen({super.key});
@@ -42,7 +42,8 @@ class _SessionsScreenState extends State<SessionsScreen> {
                 Session session = snapshot.data![index];
                 return ListTile(
                   title: Text('Session ID: ${session.id}'),
-                  subtitle: Text('Duration: ${session.durationInMinutes} minutes'),
+                  subtitle:
+                      Text('Duration: ${session.durationInMinutes} minutes'),
                   onTap: () {
                     Navigator.push(
                       context,

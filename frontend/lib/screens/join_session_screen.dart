@@ -1,8 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/session_detail_screen.dart';
-import 'dart:convert';
-
-import '../service/session_service.dart';
+import 'package:frontend/service/session_service.dart';
 
 class JoinSessionScreen extends StatefulWidget {
   const JoinSessionScreen({super.key});
@@ -15,20 +14,19 @@ class _JoinSessionScreenState extends State<JoinSessionScreen> {
   final _sessionIdController = TextEditingController();
   final SessionService _sessionService = SessionService();
 
+  // TODO: Replace
+  static const _studentId = '3ce62b17-1577-4495-b793-dc9959e5e651';
+
   Future<void> _joinSession() async {
     final sessionId = _sessionIdController.text;
 
     if (sessionId.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a session ID')),
-      );
+      _showSnackBar("Please enter a session ID");
       return;
     }
 
-    const studentId = '3ce62b17-1577-4495-b793-dc9959e5e651';
-
     try {
-      final response = await _sessionService.joinSession(sessionId, studentId);
+      final response = await _sessionService.joinSession(sessionId, _studentId);
 
       if (!mounted) return;
 
@@ -47,16 +45,18 @@ class _JoinSessionScreenState extends State<JoinSessionScreen> {
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to join session: ${response.body}')),
-        );
+        _showSnackBar('Failed to join session: ${response.body}');
       }
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      _showSnackBar('Error: $e');
     }
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override

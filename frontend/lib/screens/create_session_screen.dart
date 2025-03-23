@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/subject.dart';
-import '../models/teacher.dart';
-import '../service/session_service.dart';
+import 'package:frontend/models/subject.dart';
+import 'package:frontend/models/teacher.dart';
+import 'package:frontend/service/session_service.dart';
 
 class CreateSessionScreen extends StatefulWidget {
   const CreateSessionScreen({super.key});
@@ -29,60 +29,49 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
     try {
       final teachers = await _sessionService.fetchTeachers();
       final subjects = await _sessionService.fetchSubjects();
-      if (!mounted) return;
-      setState(() {
-        _teachers = teachers;
-        _subjects = subjects;
-      });
+      if (mounted) {
+        setState(() {
+          _teachers = teachers;
+          _subjects = subjects;
+        });
+      }
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load data: $e')),
-      );
+      _showSnackBar("Failed to load data: $e");
     }
   }
 
   Future<void> _createSession() async {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedTeacherId == null || _selectedSubjectId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a teacher and a subject')),
-        );
-        return;
-      }
+    if (!_formKey.currentState!.validate()) return;
 
-      final sessionData = {
-        "durationInMinutes": int.parse(_durationController.text),
-        "teacher": {
-          "id": _selectedTeacherId,
-        },
-        "subject": {
-          "id": _selectedSubjectId,
-        },
-      };
-
-      try {
-        final response = await _sessionService.createSession(sessionData);
-
-        if (!mounted) return;
-
-        if (response.statusCode == 200) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Session created successfully!')),
-          );
-          Navigator.pop(context);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to create session: ${response.body}')),
-          );
-        }
-      } catch (e) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
+    if (_selectedTeacherId == null || _selectedSubjectId == null) {
+      _showSnackBar('Please select a teacher and a subject');
+      return;
     }
+
+    final sessionData = {
+      "durationInMinutes": int.parse(_durationController.text),
+      "teacher": {"id": _selectedTeacherId},
+      "subject": {"id": _selectedSubjectId},
+    };
+
+    try {
+      final response = await _sessionService.createSession(sessionData);
+
+      if (response.statusCode == 200) {
+        _showSnackBar('Session created successfully!');
+        Navigator.pop(context);
+      } else {
+        _showSnackBar('Failed to create session: ${response.body}');
+      }
+    } catch (e) {
+      _showSnackBar('Error: $e');
+    }
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -99,7 +88,8 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
             children: [
               TextFormField(
                 controller: _durationController,
-                decoration: const InputDecoration(labelText: 'Duration (in minutes)'),
+                decoration:
+                    const InputDecoration(labelText: 'Duration (in minutes)'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -112,45 +102,31 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
               DropdownButtonFormField<String>(
                 value: _selectedTeacherId,
                 decoration: const InputDecoration(labelText: 'Teacher'),
-                items: _teachers.map((teacher) {
-                  return DropdownMenuItem(
-                    value: teacher.id,
-                    child: Text(teacher.name),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedTeacherId = value;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a teacher';
-                  }
-                  return null;
-                },
+                items: _teachers
+                    .map((teacher) => DropdownMenuItem(
+                          value: teacher.id,
+                          child: Text(teacher.name),
+                        ))
+                    .toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedTeacherId = value),
+                validator: (value) =>
+                    value == null ? 'Please select a teacher' : null,
               ),
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
                 value: _selectedSubjectId,
                 decoration: const InputDecoration(labelText: 'Subject'),
-                items: _subjects.map((subject) {
-                  return DropdownMenuItem(
-                    value: subject.id,
-                    child: Text(subject.name),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedSubjectId = value;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return 'Please select a subject';
-                  }
-                  return null;
-                },
+                items: _subjects
+                    .map((subject) => DropdownMenuItem(
+                          value: subject.id,
+                          child: Text(subject.name),
+                        ))
+                    .toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedSubjectId = value),
+                validator: (value) =>
+                    value == null ? 'Please select a subject' : null,
               ),
               const SizedBox(height: 20),
               ElevatedButton(

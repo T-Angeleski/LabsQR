@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/student_session.dart';
-import '../service/session_service.dart';
+import 'package:frontend/models/student_session.dart';
+import 'package:frontend/service/session_service.dart';
 
 class StudentSessionsScreen extends StatefulWidget {
   final String sessionId;
@@ -18,7 +18,8 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
   @override
   void initState() {
     super.initState();
-    futureStudentSessions = _sessionService.fetchStudentSessions(widget.sessionId);
+    futureStudentSessions =
+        _sessionService.fetchStudentSessions(widget.sessionId);
   }
 
   @override
@@ -44,7 +45,8 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                 return ListTile(
                   title: Text('Student: ${studentSession.student?.name}'),
                   subtitle: Text('Joined At: ${studentSession.joinedAt}'),
-                  trailing: Text('Attendance: ${studentSession.attendanceChecked ? 'Present' : 'Absent'}'),
+                  trailing: Text(
+                      'Attendance: ${studentSession.attendanceChecked ? 'Present' : 'Absent'}'),
                 );
               },
             );

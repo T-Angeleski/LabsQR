@@ -23,7 +23,8 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SessionsScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const SessionsScreen()),
                 );
               },
               child: const Text("View Sessions"),
@@ -33,7 +34,8 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CreateSessionScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const CreateSessionScreen()),
                 );
               },
               child: const Text("Create Session"),
@@ -43,7 +45,8 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const JoinSessionScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const JoinSessionScreen()),
                 );
               },
               child: const Text("Join Session"),
