@@ -1,33 +1,45 @@
 package mk.ukim.finki.LabsProject.web;
 
 import lombok.AllArgsConstructor;
-import mk.ukim.finki.LabsProject.model.Session;
-import mk.ukim.finki.LabsProject.model.StudentSession;
-import mk.ukim.finki.LabsProject.model.User;
-import mk.ukim.finki.LabsProject.service.interfaces.SessionService;
 import mk.ukim.finki.LabsProject.service.interfaces.StudentSessionService;
-import mk.ukim.finki.LabsProject.service.interfaces.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
+import java.util.*;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/student-sessions")
 public class StudentSessionController {
     private final StudentSessionService studentSessionService;
-    private final SessionService sessionService;
-    private final UserService userService;
 
     @PostMapping("/join/{sessionId}/student/{studentId}")
-    public ResponseEntity<StudentSession> joinSession(@PathVariable UUID sessionId, @PathVariable UUID studentId) {
-        User student = userService.getStudentById(studentId);
-        Session session = sessionService.getSessionById(sessionId);
+    public ResponseEntity<Map<String, String>> joinSession(
+            @PathVariable String sessionId,
+            @PathVariable String studentId
+    ) {
+        try {
+            UUID sessionUuid = UUID.fromString(sessionId);
+            UUID studentUuid = UUID.fromString(studentId);
 
-        return ResponseEntity.ok(studentSessionService.createStudentSession(student, session));
+            Map<String, String> response = studentSessionService.joinSession(studentUuid, sessionUuid);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid UUID format"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", "Failed to join session: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/{sessionId}")
+    public ResponseEntity<?> getStudentSessionsBySessionId(@PathVariable String sessionId) {
+        try {
+            UUID sessionUuid = UUID.fromString(sessionId);
+            return ResponseEntity.ok(studentSessionService.getStudentSessionsBySessionId(sessionUuid));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid session ID format");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error fetching student sessions: " + e.getMessage());
+        }
     }
 }

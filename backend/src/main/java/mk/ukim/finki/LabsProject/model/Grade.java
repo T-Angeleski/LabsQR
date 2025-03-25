@@ -1,5 +1,6 @@
 package mk.ukim.finki.LabsProject.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -27,6 +28,8 @@ public class Grade {
     @Nullable
     private String note;
 
+
+    @JsonBackReference // References back to StudentSession
     @OneToOne
     private StudentSession studentSession;
 
