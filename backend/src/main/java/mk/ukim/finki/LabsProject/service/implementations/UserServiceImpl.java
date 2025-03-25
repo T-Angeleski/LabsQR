@@ -36,14 +36,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Student not found"));
     }
 
+    @Override
     public List<User> getUsersByRole(Role role) {
         return userRepository.findByRole(role);
     }
-
-    @Override
-    public List<User> findByRole(Role role) {
-        return userRepository.findByRole(role);
-    }
-
-   
 }

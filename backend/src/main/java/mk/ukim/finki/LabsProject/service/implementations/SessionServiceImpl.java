@@ -28,25 +28,19 @@ public class SessionServiceImpl implements SessionService {
         return sessionRepository.findAll();
     }
 
-
     public Session createSession(Session session) {
         if (session.getTeacher() == null || session.getSubject() == null) {
             throw new IllegalArgumentException("Teacher and Subject are required.");
         }
 
-
         if (session.getCreatedAt() == null) {
             session.setCreatedAt(LocalDateTime.now());
         }
 
-
         User teacher = userRepository.findById(session.getTeacher().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Teacher not found."));
-
-
         Subject subject = subjectRepository.findById(session.getSubject().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Subject not found."));
-
 
         session.setTeacher(teacher);
         session.setSubject(subject);
@@ -74,5 +68,4 @@ public class SessionServiceImpl implements SessionService {
         sessionRepository.delete(session);
         return session;
     }
-
 }

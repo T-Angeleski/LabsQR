@@ -15,7 +15,5 @@ public interface UserService {
 
     User getStudentById(UUID studentId);
 
-    List<User> getUsersByRole(Role roleProfessor);
-
-    List<User> findByRole(Role role);
+    List<User> getUsersByRole(Role role);
 }

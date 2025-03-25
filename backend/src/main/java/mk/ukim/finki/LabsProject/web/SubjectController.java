@@ -18,7 +18,6 @@ public class SubjectController {
 
     private final SubjectService subjectService;
 
-
     @GetMapping
     public ResponseEntity<List<Subject>> getAllSubjects() {
         List<Subject> subjects = subjectService.getAllSubjects();
