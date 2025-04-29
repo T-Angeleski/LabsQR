@@ -61,11 +61,11 @@ public class User implements UserDetails {
     }
 
     @JsonManagedReference("teacher-session")
-    @OneToMany(mappedBy = "teacher")
+    @OneToMany(mappedBy = "teacher", fetch = FetchType.EAGER)
     private List<Session> sessions = List.of();
 
     @JsonManagedReference("student-studentSession")
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER)
     private List<StudentSession> studentSessions = List.of();
 
     @Override

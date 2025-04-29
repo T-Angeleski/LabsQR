@@ -7,6 +7,7 @@ import mk.ukim.finki.LabsProject.repository.UserRepository;
 import mk.ukim.finki.LabsProject.service.interfaces.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +44,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> allUsers() {
-        return userRepository.findAll();
+        List<User> users = new ArrayList<>();
+
+        userRepository.findAll().forEach(users::add);
+
+        return users;
     }
 }
