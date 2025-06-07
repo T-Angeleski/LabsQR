@@ -1,9 +1,11 @@
 package mk.ukim.finki.LabsProject.service.implementations;
 
 import mk.ukim.finki.LabsProject.model.User;
+import mk.ukim.finki.LabsProject.model.exceptions.UserNotFoundException;
 import mk.ukim.finki.LabsProject.repository.UserRepository;
 import mk.ukim.finki.LabsProject.service.interfaces.AuthenticationService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,14 +38,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public User authenticate(User input) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        input.getEmail(),
-                        input.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            input.getEmail(),
+                            input.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException(e.getMessage());
+        }
 
         return userRepository.findByEmail(input.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 }
