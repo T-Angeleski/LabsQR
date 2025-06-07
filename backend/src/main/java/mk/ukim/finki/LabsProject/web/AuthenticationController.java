@@ -3,6 +3,9 @@ package mk.ukim.finki.LabsProject.web;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.LabsProject.model.LoginResponse;
 import mk.ukim.finki.LabsProject.model.User;
+import mk.ukim.finki.LabsProject.model.dto.LoginRequestDTO;
+import mk.ukim.finki.LabsProject.model.dto.RegisterRequestDTO;
+import mk.ukim.finki.LabsProject.model.dto.UserResponseDTO;
 import mk.ukim.finki.LabsProject.service.interfaces.AuthenticationService;
 import mk.ukim.finki.LabsProject.service.interfaces.JwtService;
 import org.springframework.http.ResponseEntity;
@@ -16,24 +19,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthenticationController {
     private final JwtService jwtService;
-
     private final AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public ResponseEntity<User> register(@RequestBody User registerUser) {
-        User registeredUser = authenticationService.signup(registerUser);
-
-        return ResponseEntity.ok(registeredUser);
+    public ResponseEntity<UserResponseDTO> register(@RequestBody RegisterRequestDTO request) {
+        User registeredUser = authenticationService.signup(request.toUser());
+        return ResponseEntity.ok(UserResponseDTO.from(registeredUser));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody User loginUser) {
-        User authenticatedUser = authenticationService.authenticate(loginUser);
-
+    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginRequestDTO request) {
+        User authenticatedUser = authenticationService.authenticate(request.toUser());
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
         LoginResponse loginResponse = new LoginResponse();
-
         loginResponse.setToken(jwtToken);
         loginResponse.setExpiresIn(jwtService.getExpirationTime());
 
