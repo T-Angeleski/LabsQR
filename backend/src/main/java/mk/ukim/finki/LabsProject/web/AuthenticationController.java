@@ -1,26 +1,23 @@
 package mk.ukim.finki.LabsProject.web;
 
+import lombok.AllArgsConstructor;
 import mk.ukim.finki.LabsProject.model.LoginResponse;
 import mk.ukim.finki.LabsProject.model.User;
-import mk.ukim.finki.LabsProject.service.implementations.AuthenticationService;
-import mk.ukim.finki.LabsProject.service.implementations.JwtService;
+import mk.ukim.finki.LabsProject.service.interfaces.AuthenticationService;
+import mk.ukim.finki.LabsProject.service.interfaces.JwtService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@AllArgsConstructor
 @RequestMapping("/auth")
 @RestController
 public class AuthenticationController {
     private final JwtService jwtService;
 
     private final AuthenticationService authenticationService;
-
-    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService) {
-        this.jwtService = jwtService;
-        this.authenticationService = authenticationService;
-    }
 
     @PostMapping("/signup")
     public ResponseEntity<User> register(@RequestBody User registerUser) {

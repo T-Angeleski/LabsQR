@@ -2,20 +2,21 @@ package mk.ukim.finki.LabsProject.service.implementations;
 
 import mk.ukim.finki.LabsProject.model.User;
 import mk.ukim.finki.LabsProject.repository.UserRepository;
+import mk.ukim.finki.LabsProject.service.interfaces.AuthenticationService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthenticationService {
+public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationService(
+    public AuthenticationServiceImpl(
             UserRepository userRepository,
             AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder
