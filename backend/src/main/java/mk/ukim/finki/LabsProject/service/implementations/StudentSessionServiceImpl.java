@@ -50,7 +50,7 @@ public class StudentSessionServiceImpl implements StudentSessionService {
     @Override
     public StudentSession getStudentSessionById(UUID studentSessionId) {
         return studentSessionRepository.findById(studentSessionId)
-                .orElseThrow(() -> new EntityNotFoundException("StudentSession not found"));
+                .orElseThrow(() -> new NoSuchElementException("StudentSession not found"));
     }
 
     @Override

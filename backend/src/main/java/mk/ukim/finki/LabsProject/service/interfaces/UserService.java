@@ -16,4 +16,6 @@ public interface UserService {
     User getStudentById(UUID studentId);
 
     List<User> getUsersByRole(Role role);
+
+    List<User> allUsers();
 }

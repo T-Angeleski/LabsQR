@@ -18,28 +18,16 @@ public class StudentSessionController {
             @PathVariable String sessionId,
             @PathVariable String studentId
     ) {
-        try {
-            UUID sessionUuid = UUID.fromString(sessionId);
-            UUID studentUuid = UUID.fromString(studentId);
+        UUID sessionUuid = UUID.fromString(sessionId);
+        UUID studentUuid = UUID.fromString(studentId);
 
-            Map<String, String> response = studentSessionService.joinSession(studentUuid, sessionUuid);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Invalid UUID format"));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", "Failed to join session: " + e.getMessage()));
-        }
+        Map<String, String> response = studentSessionService.joinSession(studentUuid, sessionUuid);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{sessionId}")
     public ResponseEntity<?> getStudentSessionsBySessionId(@PathVariable String sessionId) {
-        try {
-            UUID sessionUuid = UUID.fromString(sessionId);
-            return ResponseEntity.ok(studentSessionService.getStudentSessionsBySessionId(sessionUuid));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Invalid session ID format");
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error fetching student sessions: " + e.getMessage());
-        }
+        UUID sessionUuid = UUID.fromString(sessionId);
+        return ResponseEntity.ok(studentSessionService.getStudentSessionsBySessionId(sessionUuid));
     }
 }

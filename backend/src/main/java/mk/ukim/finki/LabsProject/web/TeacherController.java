@@ -26,7 +26,7 @@ public class TeacherController {
         StudentSession studentSession = studentSessionService.getStudentSessionById(studentSessionId);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("studentName", studentSession.getStudent().getName());
+        response.put("studentName", studentSession.getStudent().getFullName());
         response.put("sessionId", studentSession.getSession().getId());
         response.put("joined_at", studentSession.getJoinedAt());
         response.put("qrcode", studentSession.getQrCode());

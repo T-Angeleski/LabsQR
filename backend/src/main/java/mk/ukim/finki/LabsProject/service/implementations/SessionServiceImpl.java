@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -50,7 +51,7 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public Session getSessionById(UUID sessionId) {
-        return sessionRepository.findById(sessionId).orElseThrow(() -> new IllegalArgumentException("Session not found"));
+        return sessionRepository.findById(sessionId).orElseThrow(() -> new NoSuchElementException("Session not found"));
     }
 
     @Override
