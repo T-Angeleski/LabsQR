@@ -26,7 +26,8 @@ public class StudentSessionServiceImpl implements StudentSessionService {
     private final SessionService sessionService;
 
     @Override
-    public StudentSession createStudentSession(User student, Session session) {
+    public StudentSession
+    createStudentSession(User student, Session session) {
         // TODO: validations (already in session, is a student, etc)
         // TODO: check if the session is active
 

@@ -1,5 +1,5 @@
 package mk.ukim.finki.LabsProject.service.implementations;
-
+import org.springframework.security.core.GrantedAuthority;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -7,10 +7,13 @@ import io.jsonwebtoken.security.Keys;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 
+import mk.ukim.finki.LabsProject.model.User;
 import mk.ukim.finki.LabsProject.service.interfaces.JwtService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -38,6 +41,19 @@ public class JwtServiceImpl implements JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        if (userDetails != null) {
+            User user = (User) userDetails;
+            extraClaims.put("userId", user.getId().toString());
+
+            List<String> roles = user.getAuthorities()
+                    .stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+
+
+            extraClaims.put("roles", roles);
+
+        }
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }
 
@@ -50,6 +66,8 @@ public class JwtServiceImpl implements JwtService {
             UserDetails userDetails,
             long expiration
     ) {
+
+
         return Jwts
                 .builder()
                 .claims(extraClaims)
@@ -78,12 +96,16 @@ public class JwtServiceImpl implements JwtService {
                 .parser()
                 .verifyWith(getSignInKey())
                 .build()
-                .parseSignedClaims(token) //MOZHEBI NE E OVA
+                .parseSignedClaims(token)
                 .getPayload();
     }
 
     private SecretKey getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", String.class));
     }
 }
