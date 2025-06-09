@@ -26,7 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _selectedRole;
 
 
-  final List<String> _roleOptions = ['ROLE_STUDENT', 'ROLE_TEACHER'];
+  final List<String> _roleOptions = ['ROLE_STUDENT', 'ROLE_PROFESSOR'];
 
   @override
   Widget build(BuildContext context) {

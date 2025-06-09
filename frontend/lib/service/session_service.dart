@@ -6,9 +6,63 @@ import 'package:frontend/models/session.dart';
 import 'package:frontend/models/student_session.dart';
 import 'package:frontend/models/subject.dart';
 import 'package:frontend/models/teacher.dart';
+import 'package:frontend/models/user.dart';
+
+class UserService {
+  static const String _baseUrl = 'http://10.0.2.2:8080/api/users/';
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  Future<Map<String, String>> _getHeaders() async {
+    final token = await _storage.read(key: 'jwt_token');
+
+    if (token == null) {
+      throw Exception('JWT token not found in secure storage');
+    }
+
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+  }
+
+
+  Future<List<User>> getUsers() async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse(_baseUrl),
+        headers: headers,
+      );
+      final rest = await http.get(Uri.parse(_baseUrl), headers: headers);
+      print("Response: ${rest.body}");
+
+
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = json.decode(response.body);
+        return jsonList.map((json) => User.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load users: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error fetching users: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<User>> getTeachers() async {
+    try {
+      final users = await getUsers();
+      return users.where((user) => user.roles.contains('ROLE_TEACHER')).toList();
+    } catch (e) {
+      debugPrint('Error filtering teachers: $e');
+      rethrow;
+    }
+  }
+}
+
 
 class SessionService {
-  static const String _baseUrl = 'http://10.0.2.2:8080/api';
+  static const String _baseUrl = 'http://10.0.2.2:8080/api/sessions';
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<T> _handleResponse<T>(
@@ -16,7 +70,7 @@ class SessionService {
     if (response.statusCode == 401) {
       throw Exception('Unauthorized - Please login again');
     }
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception(
           'Failed to load data: Status code ${response.statusCode}, Response: ${response.body}');
     }
@@ -50,12 +104,28 @@ class SessionService {
     );
   }
 
-  Future<http.Response> createSession(Map<String, dynamic> sessionData) async {
-    return _makePostRequest('sessions/create', body: sessionData);
+  Future<Session> createSession({
+    required int durationInMinutes,
+    required String teacherId,
+    required String subjectId,
+  }) async {
+    try {
+      final response = await _makePostRequest('create', body: {
+        'durationInMinutes': durationInMinutes,
+        'teacherId': teacherId,
+        'subjectId': subjectId,
+      });
+
+      return _handleResponse<Session>(
+          response, (data) => Session.fromJson(data));
+    } catch (e) {
+      debugPrint('Error creating session: $e');
+      rethrow;
+    }
   }
 
   Future<List<Session>> fetchSessions() async {
-    final response = await _makeGetRequest('sessions/sessions');
+    final response = await _makeGetRequest('sessions');
     return _handleResponse<List<Session>>(
         response,
             (data) => (data as List<dynamic>)
@@ -85,7 +155,7 @@ class SessionService {
         headers: headers,
         body: jsonEncode({}),
       );
-      
+
       return response;
     } catch (e) {
       debugPrint('Error in joinSession: $e');
@@ -95,8 +165,7 @@ class SessionService {
 
   bool _isValidUUID(String uuid) {
     try {
-      return uuid.length == 36 &&
-          uuid.split('-').length == 5;
+      return uuid.length == 36 && uuid.split('-').length == 5;
     } catch (_) {
       return false;
     }

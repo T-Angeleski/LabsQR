@@ -43,7 +43,7 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
               itemBuilder: (context, index) {
                 StudentSession studentSession = snapshot.data![index];
                 return ListTile(
-                  title: Text('Student: ${studentSession.student?.name}'),
+                  title: Text('Student: ${studentSession.student?.fullName}'),
                   subtitle: Text('Joined At: ${studentSession.joinedAt}'),
                   trailing: Text(
                       'Attendance: ${studentSession.attendanceChecked ? 'Present' : 'Absent'}'),

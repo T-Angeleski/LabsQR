@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/screens/home_screen.dart';
+import 'package:frontend/service/session_service.dart';
+import 'package:frontend/service/subject_service.dart';
 import 'package:provider/provider.dart';
 
 import 'auth/auth_service.dart';
@@ -8,17 +10,28 @@ import 'auth/auth_wrapper.dart';
 
 void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        Provider<FlutterSecureStorage>(
-          create: (_) => const FlutterSecureStorage(),
-        ),
-        Provider<AuthService>(
-          create: (context) => AuthService(),
-        ),
-      ],
-      child: const MyApp(),
-    ),
+      MultiProvider(
+        providers: [
+          Provider<FlutterSecureStorage>(
+            create: (_) => const FlutterSecureStorage(),
+          ),
+          Provider<AuthService>(
+            create: (context) => AuthService(),
+          ),
+          Provider<UserService>(
+            create: (context) => UserService(),
+          ),
+          Provider<SessionService>(
+            create: (context) => SessionService(),
+          ),
+          Provider<SubjectService>(
+            create: (context) => SubjectService(
+              Provider.of<AuthService>(context, listen: false),
+            ),
+          ),
+        ],
+        child: const MyApp(),
+      ),
   );
 }
 

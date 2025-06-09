@@ -24,7 +24,7 @@ class StudentSession {
       'id': id,
       'joinedAt': joinedAt.toIso8601String(),
       'attendanceChecked': attendanceChecked,
-      'student': student?.toJson(),
+      'student': student,
       'qrCode': qrCode?.toJson(),
       'grade': grade?.toJson(),
     };

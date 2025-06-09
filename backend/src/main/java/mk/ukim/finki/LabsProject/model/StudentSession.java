@@ -3,6 +3,7 @@ package mk.ukim.finki.LabsProject.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Data
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class StudentSession {
 
     @Id

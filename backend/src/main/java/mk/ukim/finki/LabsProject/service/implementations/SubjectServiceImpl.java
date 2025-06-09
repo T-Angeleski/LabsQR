@@ -1,6 +1,8 @@
 package mk.ukim.finki.LabsProject.service.implementations;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,4 +19,27 @@ public class SubjectServiceImpl implements SubjectService {
     public List<Subject> getAllSubjects() {
         return subjectRepository.findAll();
     }
+
+    @Override
+    public Subject save(Subject subject) {
+        return subjectRepository.save(subject);
+    }
+
+    @Override
+    public Optional<Subject> findById(UUID id) {
+        return subjectRepository.findById(id);
+    }
+
+    // todo mozebi
+    @Override
+    public Optional<Subject> update(UUID id, Subject subject) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+
+    }
+
+
 }

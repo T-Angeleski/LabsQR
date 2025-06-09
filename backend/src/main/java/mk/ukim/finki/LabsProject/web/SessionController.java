@@ -5,11 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.LabsProject.model.Session;
 import mk.ukim.finki.LabsProject.service.interfaces.SessionService;
+import mk.ukim.finki.LabsProject.util.QRCodeGenerator;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @AllArgsConstructor
 @RestController
@@ -18,20 +19,33 @@ import java.util.UUID;
 public class SessionController {
     private final SessionService sessionService;
 
+
+    @PreAuthorize("hasRole('PROFESSOR')")
     @GetMapping("/sessions")
     @Operation(summary = "Get all sessions", description = "Returns a list of all available sessions")
     public ResponseEntity<List<Session>> getSessions() {
         return ResponseEntity.ok(sessionService.getAllSessions());
     }
 
+    @PreAuthorize("hasRole('PROFESSOR')")
     @GetMapping("/{sessionId}")
     public ResponseEntity<Session> getSession(@PathVariable UUID sessionId) {
         return ResponseEntity.ok(sessionService.getSessionById(sessionId));
     }
 
+    @PreAuthorize("hasRole('PROFESSOR')")
     @PostMapping("/create")
-    public ResponseEntity<Session> createSession(@RequestBody Session session) {
+    public ResponseEntity<Map<String, Object>> createSession(@RequestBody Session session) {
         Session createdSession = sessionService.createSession(session);
-        return ResponseEntity.ok(createdSession);
+
+        String qrCodeText = createdSession.getId().toString();
+        byte[] qrCodeImage = QRCodeGenerator.getQRCodeImage(qrCodeText);
+        String qrCodeBase64 = Base64.getEncoder().encodeToString(qrCodeImage);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("session", createdSession);
+        response.put("qrCode", qrCodeBase64);
+
+        return ResponseEntity.ok(response);
     }
 }
