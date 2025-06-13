@@ -3,6 +3,7 @@ package mk.ukim.finki.LabsProject.service.implementations;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
+import mk.ukim.finki.LabsProject.model.dto.SubjectDTO;
 import org.springframework.stereotype.Service;
 
 import mk.ukim.finki.LabsProject.model.Subject;
@@ -14,7 +15,8 @@ import mk.ukim.finki.LabsProject.service.interfaces.SubjectService;
 public class SubjectServiceImpl implements SubjectService {
     private final SubjectRepository subjectRepository;
 
-    public List<Subject> getAllSubjects() {
-        return subjectRepository.findAll();
+    public List<SubjectDTO> getAllSubjects() {
+        List<Subject> subjects = subjectRepository.findAll();
+        return SubjectDTO.from(subjects);
     }
 }

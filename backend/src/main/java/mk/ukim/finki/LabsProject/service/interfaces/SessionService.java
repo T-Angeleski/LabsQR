@@ -1,18 +1,19 @@
 package mk.ukim.finki.LabsProject.service.interfaces;
 
-import mk.ukim.finki.LabsProject.model.Session;
+import mk.ukim.finki.LabsProject.model.dto.CreateSessionRequestDTO;
+import mk.ukim.finki.LabsProject.model.dto.SessionDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface SessionService {
-    List<Session> getAllSessions();
+    List<SessionDTO> getAllSessions();
 
-    Session createSession(Session session);
+    SessionDTO createSession(CreateSessionRequestDTO requestDTO);
 
-    Session getSessionById(UUID sessionId);
+    SessionDTO getSessionById(UUID sessionId);
 
-    Session updateSession(UUID sessionId, Integer durationInMinutes);
+    SessionDTO updateSession(UUID sessionId, Integer durationInMinutes);
 
-    Session deleteSession(UUID sessionId);
+    SessionDTO deleteSession(UUID sessionId);
 }

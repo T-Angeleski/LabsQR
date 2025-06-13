@@ -1,5 +1,6 @@
 package mk.ukim.finki.LabsProject.config;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import mk.ukim.finki.LabsProject.model.dto.ApiError;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,21 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError.of(
                 HttpStatus.NOT_FOUND.value(),
                 "Not Found",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ApiError> handleEntityNotFoundException(
+            EntityNotFoundException ex,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = ApiError.of(
+                HttpStatus.NOT_FOUND.value(),
+                "Entity Not Found",
                 ex.getMessage(),
                 request.getRequestURI()
         );

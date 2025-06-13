@@ -3,21 +3,16 @@ package mk.ukim.finki.LabsProject.service.interfaces;
 import mk.ukim.finki.LabsProject.model.Session;
 import mk.ukim.finki.LabsProject.model.StudentSession;
 import mk.ukim.finki.LabsProject.model.User;
+import mk.ukim.finki.LabsProject.model.dto.StudentSessionDTO;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public interface StudentSessionService {
-    StudentSession createStudentSession(User student, Session session);
+    StudentSessionDTO joinSession(UUID studentId, UUID sessionId);
 
-    List<StudentSession> getStudentsBySessionId(UUID sessionId);
+    StudentSessionDTO getStudentSessionById(UUID studentSessionId);
 
-    StudentSession getStudentSessionById(UUID studentSessionId);
-
-    void saveStudentSession(StudentSession studentSession);
-
-    List<StudentSession> getStudentSessionsBySessionId(UUID sessionUuid);
-
-    Map<String, String> joinSession(UUID studentId, UUID sessionId);
+    List<StudentSessionDTO> getStudentSessionsBySessionId(UUID sessionUuid);
 }

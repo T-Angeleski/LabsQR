@@ -1,5 +1,6 @@
 package mk.ukim.finki.LabsProject.web;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.LabsProject.model.LoginResponse;
 import mk.ukim.finki.LabsProject.model.User;
@@ -22,13 +23,13 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDTO> register(@RequestBody RegisterRequestDTO request) {
+    public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid RegisterRequestDTO request) {
         User registeredUser = authenticationService.signup(request.toUser());
         return ResponseEntity.ok(UserResponseDTO.from(registeredUser));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginRequestDTO request) {
+    public ResponseEntity<LoginResponse> authenticate(@RequestBody @Valid LoginRequestDTO request) {
         User authenticatedUser = authenticationService.authenticate(request.toUser());
         String jwtToken = jwtService.generateToken(authenticatedUser);
 

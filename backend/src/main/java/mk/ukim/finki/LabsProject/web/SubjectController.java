@@ -1,6 +1,6 @@
 package mk.ukim.finki.LabsProject.web;
 
-import mk.ukim.finki.LabsProject.model.Subject;
+import mk.ukim.finki.LabsProject.model.dto.SubjectDTO;
 import mk.ukim.finki.LabsProject.service.interfaces.SubjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +19,8 @@ public class SubjectController {
     private final SubjectService subjectService;
 
     @GetMapping
-    public ResponseEntity<List<Subject>> getAllSubjects() {
-        List<Subject> subjects = subjectService.getAllSubjects();
+    public ResponseEntity<List<SubjectDTO>> getAllSubjects() {
+        List<SubjectDTO> subjects = subjectService.getAllSubjects();
         return ResponseEntity.ok(subjects);
     }
 }
