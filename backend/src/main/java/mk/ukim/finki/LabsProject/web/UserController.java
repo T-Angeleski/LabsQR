@@ -26,8 +26,8 @@ public class UserController {
     @Operation(summary = "Get all professors", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/teachers")
     public ResponseEntity<List<UserResponseDTO>> getProfessors() {
-        List<User> professors = userService.getUsersByRole(Role.ROLE_PROFESSOR);
-        return ResponseEntity.ok(UserResponseDTO.from(professors));
+        List<UserResponseDTO> professors = userService.getUsersByRole(Role.ROLE_PROFESSOR);
+        return ResponseEntity.ok(professors);
     }
 
     @Operation(summary = "Get current authenticated user", security = @SecurityRequirement(name = "bearerAuth"))
@@ -41,7 +41,7 @@ public class UserController {
     @Operation(summary = "Get all users", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/")
     public ResponseEntity<List<UserResponseDTO>> allUsers() {
-        List<User> users = userService.allUsers();
-        return ResponseEntity.ok(UserResponseDTO.from(users));
+        List<UserResponseDTO> users = userService.allUsers();
+        return ResponseEntity.ok(users);
     }
 }

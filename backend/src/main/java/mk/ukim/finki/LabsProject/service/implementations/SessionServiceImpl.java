@@ -1,9 +1,13 @@
 package mk.ukim.finki.LabsProject.service.implementations;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.LabsProject.model.Session;
 import mk.ukim.finki.LabsProject.model.Subject;
 import mk.ukim.finki.LabsProject.model.User;
+import mk.ukim.finki.LabsProject.model.dto.CreateSessionRequestDTO;
+import mk.ukim.finki.LabsProject.model.dto.SessionDTO;
+import mk.ukim.finki.LabsProject.model.enums.Role;
 import mk.ukim.finki.LabsProject.repository.SessionRepository;
 import mk.ukim.finki.LabsProject.repository.SubjectRepository;
 import mk.ukim.finki.LabsProject.repository.UserRepository;
@@ -12,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -24,49 +27,65 @@ public class SessionServiceImpl implements SessionService {
     private final SubjectRepository subjectRepository;
 
     @Override
-    public List<Session> getAllSessions() {
-        // TODO: paginate
-        return sessionRepository.findAll();
+    public List<SessionDTO> getAllSessions() {
+        List<Session> sessions = sessionRepository.findAll();
+        return SessionDTO.from(sessions);
     }
 
-    public Session createSession(Session session) {
-        if (session.getTeacher() == null || session.getSubject() == null) {
-            throw new IllegalArgumentException("Teacher and Subject are required.");
+    @Override
+    public SessionDTO createSession(CreateSessionRequestDTO requestDTO) {
+        if (requestDTO == null || requestDTO.getDurationInMinutes() == null || requestDTO.getSubjectId() == null) {
+            throw new IllegalArgumentException("Duration and Subject ID are required.");
         }
 
-        if (session.getCreatedAt() == null) {
-            session.setCreatedAt(LocalDateTime.now());
-        }
+        User teacher = userRepository.findByIdAndRole(requestDTO.getTeacherId(), Role.ROLE_PROFESSOR)
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found with ID: " + requestDTO.getTeacherId()));
+        Subject subject = subjectRepository.findById(requestDTO.getSubjectId())
+                .orElseThrow(() -> new EntityNotFoundException("Subject not found with ID: " + requestDTO.getSubjectId()));
 
-        User teacher = userRepository.findById(session.getTeacher().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Teacher not found."));
-        Subject subject = subjectRepository.findById(session.getSubject().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Subject not found."));
-
+        Session session = new Session();
+        session.setDurationInMinutes(requestDTO.getDurationInMinutes());
         session.setTeacher(teacher);
         session.setSubject(subject);
+        session.setCreatedAt(LocalDateTime.now());
+        Session savedSession = sessionRepository.save(session);
 
-        return sessionRepository.save(session);
+        return SessionDTO.from(savedSession);
     }
 
     @Override
-    public Session getSessionById(UUID sessionId) {
-        return sessionRepository.findById(sessionId).orElseThrow(() -> new NoSuchElementException("Session not found"));
+    public SessionDTO getSessionById(UUID sessionId) {
+        if (sessionId == null) {
+            throw new IllegalArgumentException("Session ID cannot be null");
+        }
+
+        Session session = getSessionByIdOrThrow(sessionId);
+        return SessionDTO.from(session);
     }
 
     @Override
-    public Session updateSession(UUID sessionId, Integer durationInMinutes) {
-        // TODO: rethink what to update
-        Session session = getSessionById(sessionId);
+    public SessionDTO updateSession(UUID sessionId, Integer durationInMinutes) {
+        if (sessionId == null || durationInMinutes == null) {
+            throw new IllegalArgumentException("Session ID and duration cannot be null");
+        }
+
+        Session session = getSessionByIdOrThrow(sessionId);
         session.setDurationInMinutes(durationInMinutes);
+        sessionRepository.save(session);
 
-        return sessionRepository.save(session);
+        return SessionDTO.from(session);
     }
 
     @Override
-    public Session deleteSession(UUID sessionId) {
-        Session session = getSessionById(sessionId);
+    public SessionDTO deleteSession(UUID sessionId) {
+        Session session = getSessionByIdOrThrow(sessionId);
         sessionRepository.delete(session);
-        return session;
+
+        return SessionDTO.from(session);
+    }
+
+    private Session getSessionByIdOrThrow(UUID sessionId) {
+        return sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new EntityNotFoundException("Session not found with ID: " + sessionId));
     }
 }

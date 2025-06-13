@@ -1,21 +1,17 @@
 package mk.ukim.finki.LabsProject.service.interfaces;
 
 import mk.ukim.finki.LabsProject.model.User;
+import mk.ukim.finki.LabsProject.model.dto.UserResponseDTO;
 import mk.ukim.finki.LabsProject.model.enums.Role;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    void register(String username, String password, String repeatPassword, String name, String surname, String role);
+    List<UserResponseDTO> allUsers();
 
-    void login(String username, String password);
+    UserResponseDTO getStudentById(UUID studentId);
 
-    void logout();
+    List<UserResponseDTO> getUsersByRole(Role role);
 
-    User getStudentById(UUID studentId);
-
-    List<User> getUsersByRole(Role role);
-
-    List<User> allUsers();
 }
