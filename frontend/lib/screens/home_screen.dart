@@ -22,6 +22,9 @@ class _HomePageState extends State<HomePage> {
     final isProfessor = auth.userRoles?.contains('ROLE_PROFESSOR') ?? false;
     final isStudent = auth.userRoles?.contains('ROLE_STUDENT') ?? false;
 
+    print("User roles: ${auth.userRoles}");
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Flutter Frontend"),

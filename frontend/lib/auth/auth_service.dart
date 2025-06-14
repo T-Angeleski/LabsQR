@@ -2,11 +2,39 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../sessionManager/session_manager.dart';
 
 class AuthService {
   static const String baseUrl = 'http://10.0.2.2:8080/auth';
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final SharedPreferences _prefs;
   List<String>? userRoles;
+
+  AuthService._(this._prefs);
+
+  static Future<AuthService> create() async {
+    final prefs = await SharedPreferences.getInstance();
+    final authService = AuthService._(prefs);
+
+    final token = await authService.getToken();
+    if (token != null && !JwtDecoder.isExpired(token)) {
+      authService.userRoles = authService._parseRolesFromToken(token);
+    }
+
+    return authService;
+  }
+
+
+  static const String _jwtTokenKey = 'jwt_token';
+  static const String _userRolesKey = 'user_roles';
+  static const String _inSessionKey = 'in_session';
+  static const String _sessionDataKey = 'session_data';
+
+  Future<void> _initialize() async {
+  }
+
 
   Future<Map<String, dynamic>> register(
       String fullName,
@@ -57,11 +85,7 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-
-        userRoles = _parseRolesFromToken(data['token']);
-        await _storage.write(key: 'jwt_token', value: data['token']);
-        await _storage.write(key: 'user_roles', value: jsonEncode(userRoles));
-
+        await _storeAuthData(data['token']);
         return true;
       } else {
         throw Exception('Login failed: ${response.body}');
@@ -71,17 +95,27 @@ class AuthService {
     }
   }
 
+  Future<void> _storeAuthData(String token) async {
+    userRoles = _parseRolesFromToken(token);
+    await _secureStorage.write(key: _jwtTokenKey, value: token);
+    await _prefs.setString(_userRolesKey, jsonEncode(userRoles));
+  }
+
   Future<String?> getToken() async {
-    return await _storage.read(key: 'jwt_token');
+    return await _secureStorage.read(key: _jwtTokenKey);
   }
 
   Future<void> logout() async {
-    await _storage.delete(key: 'user_roles');
-    await _storage.delete(key: 'jwt_token');
+    await _secureStorage.delete(key: _jwtTokenKey);
+    await _prefs.remove(_userRolesKey);
+    await _prefs.remove(_inSessionKey);
+    await _prefs.remove(_sessionDataKey);
+    await SessionManager().endSession();
+    userRoles = null;
   }
 
   Future<String> getCurrentUserIdAsync() async {
-    final token = await _storage.read(key: 'jwt_token');
+    final token = await _secureStorage.read(key: _jwtTokenKey);
     if (token == null) throw Exception("Not logged in");
 
     final decoded = JwtDecoder.decode(token);
@@ -89,24 +123,42 @@ class AuthService {
         (throw Exception("Invalid user ID in token"));
   }
 
+  Future<void> startSession(Map<String, dynamic> sessionData) async {
+    await _prefs.setBool(_inSessionKey, true);
+    await _prefs.setString(_sessionDataKey, jsonEncode(sessionData));
+  }
+
+  Future<void> endSession() async {
+    await _prefs.remove(_inSessionKey);
+    await _prefs.remove(_sessionDataKey);
+  }
+
+  bool get isInSession => _prefs.getBool(_inSessionKey) ?? false;
+
+  Map<String, dynamic>? get currentSessionData {
+    final sessionData = _prefs.getString(_sessionDataKey);
+    return sessionData != null ? jsonDecode(sessionData) : null;
+  }
+
+  Future<bool> isLoggedIn() async {
+    final token = await getToken();
+    if (token == null) return false;
+
+    try {
+      return !JwtDecoder.isExpired(token);
+    } catch (e) {
+      return false;
+    }
+  }
 
   List<String> _parseRolesFromToken(String token) {
     try {
-      final parts = token.split('.');
-      if (parts.length != 3) {
-        throw Exception('Invalid token');
-      }
+      final decoded = JwtDecoder.decode(token);
 
-      final payload = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
-      final payloadMap = json.decode(payload);
-
-
-      if (payloadMap['roles'] is List) {
-        return List<String>.from(payloadMap['roles']);
-      }
-
-      else if (payloadMap['scope'] is String) {
-        return payloadMap['scope'].toString().split(' ');
+      if (decoded['roles'] is List) {
+        return List<String>.from(decoded['roles']);
+      } else if (decoded['scope'] is String) {
+        return decoded['scope'].toString().split(' ');
       }
 
       return [];
@@ -115,5 +167,11 @@ class AuthService {
       return [];
     }
   }
-  
+
+  Future<void> loadAuthState() async {
+    final token = await getToken();
+    if (token != null) {
+      userRoles = _parseRolesFromToken(token);
+    }
+  }
 }

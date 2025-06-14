@@ -95,6 +95,14 @@ class SessionService {
     );
   }
 
+  Future<http.Response> _makeGetRequestForSomethingElse(String path) async {
+    final headers = await _getHeaders();
+    return await http.get(
+      Uri.parse('http://10.0.2.2:8080/api/sessions/$path'),
+      headers: headers,
+    );
+  }
+
   Future<http.Response> _makePostRequest(String path, {dynamic body}) async {
     final headers = await _getHeaders();
     return await http.post(
@@ -104,23 +112,24 @@ class SessionService {
     );
   }
 
-  Future<Session> createSession({
+  Future<void> createSession({
     required int durationInMinutes,
     required String teacherId,
     required String subjectId,
   }) async {
-    try {
-      final response = await _makePostRequest('create', body: {
+    final headers = await _getHeaders();
+    final response = await http.post(
+      Uri.parse('$_baseUrl/create'),
+      headers: headers,
+      body: jsonEncode({
         'durationInMinutes': durationInMinutes,
-        'teacherId': teacherId,
-        'subjectId': subjectId,
-      });
+        'teacher': {'id': teacherId},
+        'subject': {'id': subjectId},
+      }),
+    );
 
-      return _handleResponse<Session>(
-          response, (data) => Session.fromJson(data));
-    } catch (e) {
-      debugPrint('Error creating session: $e');
-      rethrow;
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create session: ${response.body}');
     }
   }
 
@@ -196,15 +205,58 @@ class SessionService {
   }
 
   Future<List<StudentSession>> fetchStudentSessions(String sessionId) async {
-    final response = await _makeGetRequest('student-sessions/session/$sessionId');
+    final response = await _makeGetRequestForSomethingElse(sessionId);
     return _handleResponse<List<StudentSession>>(
-        response,
-            (data) => (data as List<dynamic>)
-            .map((json) => StudentSession.fromJson(json))
-            .toList());
+      response,
+          (data) {
+        print('Raw API response: $data');
+
+        if (data is Map<String, dynamic>) {
+          return [StudentSession.fromJson(data)];
+        } else if (data is List) {
+          return data.map((item) => StudentSession.fromJson(item as Map<String, dynamic>)).toList();
+        } else {
+          throw FormatException('Unexpected response type: ${data.runtimeType}');
+        }
+      },
+    );
   }
 
   Future<void> clearAuthToken() async {
     await _storage.delete(key: 'auth_token');
+  }
+}
+
+class StudentSessionService {
+  static const String _baseUrl = 'http://10.0.2.2:8080/api/student-sessions';
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  Future<Map<String, String>> _getHeaders() async {
+    final token = await _storage.read(key: 'jwt_token');
+
+    if (token == null) {
+      throw Exception('JWT token not found in secure storage');
+    }
+
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+  }
+
+
+  Future<Map<String, dynamic>> joinSession(String sessionId) async {
+    final headers = await _getHeaders();
+    final response = await http.post(
+      Uri.parse('$_baseUrl/join/$sessionId'),
+      headers : headers,
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      final error = jsonDecode(response.body);
+      throw Exception(error['message'] ?? 'Failed to join session');
+    }
   }
 }

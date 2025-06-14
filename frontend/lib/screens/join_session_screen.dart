@@ -1,10 +1,10 @@
-import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/session_detail_screen.dart';
 import 'package:frontend/service/session_service.dart';
-import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
+import 'package:provider/provider.dart';
+
 import '../auth/auth_service.dart';
-import 'package:image_picker/image_picker.dart';
 
 class JoinSessionScreen extends StatefulWidget {
   const JoinSessionScreen({super.key});
@@ -15,107 +15,54 @@ class JoinSessionScreen extends StatefulWidget {
 
 class _JoinSessionScreenState extends State<JoinSessionScreen> {
   final _sessionIdController = TextEditingController();
-  final SessionService _sessionService = SessionService();
-  final AuthService _authService = AuthService();
-  QRViewController? _qrViewController;
-  final GlobalKey _qrKey = GlobalKey(debugLabel: 'QR');
-  bool _isScanning = false;
+  final _sessionService = StudentSessionService();
+  bool _isLoading = false;
 
   Future<void> _joinSession() async {
-    try {
-      final sessionId = _sessionIdController.text.trim();
-
-      if (sessionId.isEmpty) {
-        _showSnackBar("Please enter a valid session ID");
-        return;
-      }
-
-      await _processSessionJoin(sessionId);
-    } catch (e) {
-      _showSnackBar("Error: ${e.toString()}");
-      debugPrint("Join session error: $e");
+    final sessionId = _sessionIdController.text.trim();
+    if (sessionId.isEmpty) {
+      _showSnackBar("Please enter a session ID");
+      return;
     }
-  }
 
-  Future<void> _processSessionJoin(String sessionId) async {
-    final userId = await _authService.getCurrentUserIdAsync();
-    debugPrint('Attempting to join session $sessionId as user $userId');
+    setState(() => _isLoading = true);
 
-    final response = await _sessionService.joinSession(sessionId);
+    try {
+      // 1. Call backend to join the session
+      final sessionData = await _sessionService.joinSession(sessionId);
 
-    if (!mounted) return;
+      // 2. Persist session locally (for reopening after app restart)
+      final authService = Provider.of<AuthService>(context, listen: false);
+      await authService.startSession(sessionData); // Store session data in SharedPreferences
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      Navigator.push(
+      if (!mounted) return;
+
+      // 3. Navigate to session details
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => SessionDetailsScreen(
-            qrCodeBase64: responseData['qrCode'],
-            teacherUrl: responseData['teacherUrl'],
-            joinedAt: responseData['joinedAt'],
-            attendanceChecked: responseData['attendanceChecked'],
-          ),
+          builder: (context) => const SessionDetailsScreen(),
         ),
       );
-    } else {
-      final error = jsonDecode(response.body)['message'] ?? 'Unknown error';
-      _showSnackBar('Failed to join session: $error (${response.statusCode})');
-    }
-  }
-
-  void _onQRViewCreated(QRViewController controller) {
-    setState(() {
-      _qrViewController = controller;
-    });
-
-    controller.scannedDataStream.listen((scanData) async {
-      if (scanData.code != null) {
-        controller.pauseCamera();
-        setState(() {
-          _isScanning = false;
-        });
-        await _processSessionJoin(scanData.code!);
-      }
-    });
-  }
-
-  Future<void> _scanFromGallery() async {
-    try {
-      final picker = ImagePicker();
-      final image = await picker.pickImage(source: ImageSource.gallery);
-
-      if (image != null) {
-
-        _showSnackBar("Gallery scanning not implemented yet");
-      }
     } catch (e) {
-      _showSnackBar("Error scanning from gallery: ${e.toString()}");
+      if (!mounted) return;
+      _showSnackBar('Failed to join session: ${e.toString()}');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  void _toggleScan() {
-    setState(() {
-      _isScanning = !_isScanning;
-      if (!_isScanning) {
-        _qrViewController?.dispose();
-        _qrViewController = null;
-      }
-    });
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
   void dispose() {
-    _qrViewController?.dispose();
     _sessionIdController.dispose();
     super.dispose();
-  }
-
-  void _showSnackBar(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
   }
 
   @override
@@ -126,50 +73,21 @@ class _JoinSessionScreenState extends State<JoinSessionScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            if (!_isScanning) ...[
-              TextField(
-                controller: _sessionIdController,
-                decoration: const InputDecoration(
-                  labelText: 'Session ID',
-                  hintText: 'Enter session UUID',
-                ),
+            TextField(
+              controller: _sessionIdController,
+              decoration: const InputDecoration(
+                labelText: 'Session ID',
+                hintText: 'Enter the session ID',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _joinSession,
-                child: const Text('Join Session'),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'OR',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 20),
-            ],
-            ElevatedButton(
-              onPressed: _toggleScan,
-              child: Text(_isScanning ? 'Stop Scanning' : 'Scan QR Code'),
             ),
-            if (_isScanning) ...[
-              const SizedBox(height: 20),
-              Expanded(
-                child: QRView(
-                  key: _qrKey,
-                  onQRViewCreated: _onQRViewCreated,
-                  overlay: QrScannerOverlayShape(
-                    borderColor: Colors.blue,
-                    borderRadius: 10,
-                    borderLength: 30,
-                    borderWidth: 10,
-                    cutOutSize: MediaQuery.of(context).size.width * 0.8,
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: _scanFromGallery,
-                child: const Text('Scan from Gallery'),
-              ),
-            ],
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _isLoading ? null : _joinSession,
+              child: _isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Join Session'),
+            ),
           ],
         ),
       ),

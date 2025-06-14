@@ -18,13 +18,25 @@ public class StudentSessionController {
 
     @PreAuthorize("hasRole('STUDENT')")
     @PostMapping("/join/{sessionId}")
-    public ResponseEntity<Map<String, String>> joinSession(
+    public ResponseEntity<?> joinSession(
             @PathVariable String sessionId,
             @AuthenticationPrincipal User user
     ) {
-        UUID sessionUuid = UUID.fromString(sessionId);
-        Map<String, String> response = studentSessionService.joinSession(user.getId(), sessionUuid);
-        return ResponseEntity.ok(response);
+        try {
+            UUID sessionUuid = UUID.fromString(sessionId);
+            Map<String, String> response = studentSessionService.joinSession(user.getId(), sessionUuid);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Invalid session ID format",
+                    "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "error", "Failed to join session",
+                    "message", e.getMessage()
+            ));
+        }
     }
 
     @GetMapping("/{sessionId}")

@@ -69,20 +69,9 @@ public class StudentSessionServiceImpl implements StudentSessionService {
         User student = userService.getStudentById(studentId);
         Session session = sessionService.getSessionById(sessionId);
         StudentSession studentSession = createStudentSession(student, session);
-        String teacherUrl = "http://localhost:8080/api/teacher-view/" + studentSession.getId();
-        byte[] qrCodeImage = QRCodeGenerator.getQRCodeImage(teacherUrl);
-        String qrCodeBase64 = Base64.getEncoder().encodeToString(qrCodeImage);
-
-        QRCode qrCode = new QRCode();
-        qrCode.setQrCode(qrCodeImage);
-        qrCode.setStudentSession(studentSession);
-        studentSession.setQrCode(qrCode);
-
         saveStudentSession(studentSession);
 
         Map<String, String> response = new HashMap<>();
-        response.put("qrCode", qrCodeBase64);
-        response.put("teacherUrl", teacherUrl);
         response.put("joinedAt", studentSession.getJoinedAt().toString());
         response.put("attendanceChecked", String.valueOf(studentSession.isAttendanceChecked()));
         return response;
