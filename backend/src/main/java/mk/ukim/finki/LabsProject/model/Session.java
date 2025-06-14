@@ -41,6 +41,9 @@ public class Session {
     @ManyToOne(fetch = FetchType.EAGER)
     private Subject subject;
 
+    @JsonManagedReference
+    private byte[] qrCode;
+
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(createdAt.plusMinutes(durationInMinutes));
     }

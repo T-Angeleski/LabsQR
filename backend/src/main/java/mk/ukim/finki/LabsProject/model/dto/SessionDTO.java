@@ -20,6 +20,7 @@ public class SessionDTO {
     private String teacherName;
     private String subjectName;
     private boolean isExpired;
+    private byte[] qrCode;
 
     public static SessionDTO from(Session session) {
         SessionDTO dto = new SessionDTO();
@@ -38,5 +39,10 @@ public class SessionDTO {
         return sessions.stream()
                 .map(SessionDTO::from)
                 .collect(Collectors.toList());
+    }
+
+    public static SessionDTO setQrCode(SessionDTO sessionDTO, byte[] qrCode) {
+        sessionDTO.setQrCode(qrCode);
+        return sessionDTO;
     }
 }
