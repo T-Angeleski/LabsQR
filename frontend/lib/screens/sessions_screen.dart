@@ -24,7 +24,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sessions'),
+        title: const Text('All sessions'),
       ),
       body: FutureBuilder<List<Session>>(
         future: futureSessions,

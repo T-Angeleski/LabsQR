@@ -28,4 +28,6 @@ class Grade {
       note: json['note'],
     );
   }
+
+  get value => null;
 }
