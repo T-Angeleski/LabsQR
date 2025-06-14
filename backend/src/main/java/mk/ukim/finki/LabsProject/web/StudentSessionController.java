@@ -1,9 +1,12 @@
 package mk.ukim.finki.LabsProject.web;
 
 import lombok.AllArgsConstructor;
+import mk.ukim.finki.LabsProject.model.User;
 import mk.ukim.finki.LabsProject.model.dto.StudentSessionDTO;
 import mk.ukim.finki.LabsProject.service.interfaces.StudentSessionService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -14,16 +17,12 @@ import java.util.*;
 public class StudentSessionController {
     private final StudentSessionService studentSessionService;
 
-    @PostMapping("/join/{sessionId}/student/{studentId}")
-    public ResponseEntity<StudentSessionDTO> joinSession(
-            @PathVariable String sessionId,
-            @PathVariable String studentId
-    ) {
+    @PreAuthorize("hasRole('STUDENT')")
+    @PostMapping("/join/{sessionId}")
+    public ResponseEntity<StudentSessionDTO> joinSession(@PathVariable String sessionId,  @AuthenticationPrincipal User user) {
         UUID sessionUuid = UUID.fromString(sessionId);
-        UUID studentUuid = UUID.fromString(studentId);
-
-        StudentSessionDTO studentSessionDTO = studentSessionService.joinSession(studentUuid, sessionUuid);
-        return ResponseEntity.ok(studentSessionDTO);
+        StudentSessionDTO response = studentSessionService.joinSession(user.getId(), sessionUuid);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{sessionId}")
@@ -32,4 +31,6 @@ public class StudentSessionController {
         List<StudentSessionDTO> studentSessionDTOS = studentSessionService.getStudentSessionsBySessionId(sessionUuid);
         return ResponseEntity.ok(studentSessionDTOS);
     }
+
+
 }

@@ -123,8 +123,8 @@ class SessionService {
       headers: headers,
       body: jsonEncode({
         'durationInMinutes': durationInMinutes,
-        'teacher': {'id': teacherId},
-        'subject': {'id': subjectId},
+        'teacherId':  teacherId,
+        'subjectId': subjectId,
       }),
     );
 
