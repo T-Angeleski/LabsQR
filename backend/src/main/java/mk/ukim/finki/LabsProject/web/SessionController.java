@@ -36,17 +36,28 @@ public class SessionController {
 
     @PreAuthorize("hasRole('PROFESSOR')")
     @PostMapping("/create")
-    public ResponseEntity<Map<String, Object>> createSession(
+    public void createSession(
             @RequestBody @Valid CreateSessionRequestDTO requestDTO
     ) {
         SessionDTO createdSession = sessionService.createSession(requestDTO);
 
         String qrCodeText = createdSession.getId().toString();
-        byte[] qrCodeImage = QRCodeGenerator.getQRCodeImage(qrCodeText);
-        String qrCodeBase64 = Base64.getEncoder().encodeToString(qrCodeImage);
+        byte[] qrCodeImage = QRCodeGenerator.generateQrCode(qrCodeText);
+        createdSession.setQrCode(qrCodeImage);
+    }
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("session", createdSession);
+    @PreAuthorize("hasRole('PROFESSOR')")
+    @GetMapping("/qr-code/{sessionId}")
+    public ResponseEntity<Map<String, String>> getSessionQRCode(@PathVariable UUID sessionId) {
+        SessionDTO session = sessionService.getSessionById(sessionId);
+        if (session == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String qrCodeBase64 = Base64.getEncoder().encodeToString(session.getQrCode());
+
+        Map<String, String> response = new HashMap<>();
+        response.put("session", session.getId().toString());
         response.put("qrCode", qrCodeBase64);
 
         return ResponseEntity.ok(response);

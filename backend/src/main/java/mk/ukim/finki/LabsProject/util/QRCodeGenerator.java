@@ -12,7 +12,7 @@ public class QRCodeGenerator {
     static ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
     private static final int IMAGE_DIMENSION = 200;
 
-    public static byte[] getQRCodeImage(String text) {
+    public static byte[] generateQrCode(String text) {
         try {
             BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, IMAGE_DIMENSION, IMAGE_DIMENSION);
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);

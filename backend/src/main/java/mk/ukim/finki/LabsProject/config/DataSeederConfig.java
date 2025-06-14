@@ -21,7 +21,6 @@ public class DataSeederConfig {
     private final SessionRepository sessionRepository;
     private final StudentSessionRepository studentSessionRepository;
     private final GradeRepository gradeRepository;
-    private final QRCodeRepository qrCodeRepository;
 
     @Bean
     @Profile("h2")
@@ -88,15 +87,15 @@ public class DataSeederConfig {
 
             gradeRepository.saveAll(List.of(johnWebGrade, janeWebGrade));
 
-            QRCode johnQrCode = new QRCode();
-            johnQrCode.setStudentSession(johnWebSession);
-            johnQrCode.setQrCode("sample-qr-data-1".getBytes());
+//            QRCode johnQrCode = new QRCode();
+//            johnQrCode.setStudentSession(johnWebSession);
+//            johnQrCode.setQrCode("sample-qr-data-1".getBytes());
+//
+//            QRCode janeQrCode = new QRCode();
+//            janeQrCode.setStudentSession(janeWebSession);
+//            janeQrCode.setQrCode("sample-qr-data-2".getBytes());
 
-            QRCode janeQrCode = new QRCode();
-            janeQrCode.setStudentSession(janeWebSession);
-            janeQrCode.setQrCode("sample-qr-data-2".getBytes());
-
-            qrCodeRepository.saveAll(List.of(johnQrCode, janeQrCode));
+//            qrCodeRepository.saveAll(List.of(johnQrCode, janeQrCode));
 
             System.out.println("Data seeding completed!");
         };
