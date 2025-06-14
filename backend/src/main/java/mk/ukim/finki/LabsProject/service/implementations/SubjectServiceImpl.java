@@ -22,26 +22,4 @@ public class SubjectServiceImpl implements SubjectService {
         return SubjectDTO.from(subjects);
     }
 
-    @Override
-    public Subject save(Subject subject) {
-        return subjectRepository.save(subject);
-    }
-
-    @Override
-    public Optional<Subject> findById(UUID id) {
-        return subjectRepository.findById(id);
-    }
-
-    // todo mozebi
-    @Override
-    public Optional<Subject> update(UUID id, Subject subject) {
-        return Optional.empty();
-    }
-
-    @Override
-    public void deleteById(UUID id) {
-
-    }
-
-
 }

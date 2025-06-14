@@ -25,35 +25,4 @@ public class SubjectController {
         List<SubjectDTO> subjects = subjectService.getAllSubjects();
         return ResponseEntity.ok(subjects);
     }
-
-
-    @PostMapping
-    @PreAuthorize("hasRole('PROFESSOR')")
-    public ResponseEntity<Subject> createSubject(@RequestBody Subject subject) {
-        Subject createdSubject = subjectService.save(subject);
-        return ResponseEntity.ok(createdSubject);
-    }
-
-    @PreAuthorize("hasRole('PROFESSOR')")
-    @GetMapping("/{id}")
-    public ResponseEntity<Subject> getSubjectById(@PathVariable UUID id) {
-        return subjectService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('PROFESSOR')")
-    public ResponseEntity<Subject> updateSubject(@PathVariable UUID id, @RequestBody Subject subject) {
-        Optional<Subject> updatedSubject = subjectService.update(id, subject);
-
-        return updatedSubject.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('PROFESSOR')")
-    public ResponseEntity<Void> deleteSubject(@PathVariable UUID id) {
-        subjectService.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
 }
