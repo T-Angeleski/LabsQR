@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/home_screen.dart';
 import 'package:provider/provider.dart';
-import '../screens/login_screen.dart';
-import '../screens/register_screen.dart';
+import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/register_screen.dart';
 import 'auth_service.dart';
 
 class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({Key? key}) : super(key: key);
+  const AuthWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class AuthWrapper extends StatelessWidget {
 }
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({Key? key}) : super(key: key);
+  const AuthScreen({super.key});
 
   @override
   _AuthScreenState createState() => _AuthScreenState();
@@ -62,7 +62,8 @@ class _AuthScreenState extends State<AuthScreen> {
         onRegisterSuccess: () {
           setState(() => showLogin = true);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registration successful! Please login.')),
+            const SnackBar(
+                content: Text('Registration successful! Please login.')),
           );
         },
       );

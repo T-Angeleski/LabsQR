@@ -1,13 +1,13 @@
 class Teacher {
   final String id;
-  final String name;
+  final String fullName;
 
-  Teacher({required this.id, required this.name});
+  Teacher({required this.id, required this.fullName});
 
   factory Teacher.fromJson(Map<String, dynamic> json) {
     return Teacher(
       id: json['id'],
-      name: json['name'],
+      fullName: json['fullName'],
     );
   }
 }

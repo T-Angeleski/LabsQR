@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../service/subject_service.dart';
-import '../auth/auth_service.dart';
-import '../models/subject.dart';
+import 'package:frontend/service/subject_service.dart';
+import 'package:frontend/models/subject.dart';
 import 'edit_subject_screen.dart';
 
 class SubjectsScreen extends StatefulWidget {
@@ -23,8 +22,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
   }
 
   void _refreshSubjects() {
-    final auth = Provider.of<AuthService>(context, listen: false);
-    final subjectService = SubjectService(auth);
+    final subjectService = Provider.of<SubjectService>(context, listen: false);
     setState(() {
       _subjectsFuture = subjectService.getSubjects();
     });
@@ -42,7 +40,7 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EditSubjectScreen(),
+                  builder: (context) => const EditSubjectScreen(),
                 ),
               ).then((_) => _refreshSubjects());
             },
@@ -74,16 +72,15 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => EditSubjectScreen(subject: subject),
+                              builder: (context) =>
+                                  EditSubjectScreen(subject: subject),
                             ),
                           ).then((_) => _refreshSubjects());
                         },
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),
-                        onPressed: () {
-
-                        },
+                        onPressed: () {},
                       ),
                     ],
                   ),
@@ -95,6 +92,4 @@ class _SubjectsScreenState extends State<SubjectsScreen> {
       ),
     );
   }
-
-
 }

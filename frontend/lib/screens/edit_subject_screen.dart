@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/subject.dart';
+import 'package:frontend/service/subject_service.dart';
 import 'package:provider/provider.dart';
-
-import '../auth/auth_service.dart';
-import '../models/subject.dart';
-import '../service/subject_service.dart';
 
 class EditSubjectScreen extends StatefulWidget {
   final Subject? subject;
 
-  const EditSubjectScreen({this.subject, super.key});
+  const EditSubjectScreen({super.key, this.subject});
 
   @override
   _EditSubjectScreenState createState() => _EditSubjectScreenState();
@@ -16,19 +14,56 @@ class EditSubjectScreen extends StatefulWidget {
 
 class _EditSubjectScreenState extends State<EditSubjectScreen> {
   final _formKey = GlobalKey<FormState>();
-  late String _name;
+  final _nameController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _name = widget.subject?.name ?? '';
+    _nameController.text = widget.subject?.name ?? '';
+  }
+
+  Future<void> _saveSubject() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    final subjectService = Provider.of<SubjectService>(context, listen: false);
+    final name = _nameController.text.trim();
+
+    try {
+      if (widget.subject == null) {
+        await subjectService.createSubject(name);
+        _showSnackBar('Subject created successfully');
+      } else {
+        await subjectService.updateSubject(widget.subject!.id, name);
+        _showSnackBar('Subject updated successfully');
+      }
+
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      _showSnackBar('Failed to save subject: $e');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.subject != null;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.subject == null ? 'Add Subject' : 'Edit Subject'),
+        title: Text(isEditing ? 'Edit Subject' : 'Add Subject'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -37,20 +72,25 @@ class _EditSubjectScreenState extends State<EditSubjectScreen> {
           child: Column(
             children: [
               TextFormField(
-                initialValue: _name,
-                decoration: const InputDecoration(labelText: 'Subject Name'),
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Subject Name',
+                  border: OutlineInputBorder(),
+                ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.trim().isEmpty) {
                     return 'Please enter a subject name';
                   }
                   return null;
                 },
-                onSaved: (value) => _name = value!,
+                enabled: !_isLoading,
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _saveSubject,
-                child: const Text('Save'),
+                onPressed: _isLoading ? null : _saveSubject,
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : Text(isEditing ? 'Update' : 'Create'),
               ),
             ],
           ),
@@ -59,26 +99,9 @@ class _EditSubjectScreenState extends State<EditSubjectScreen> {
     );
   }
 
-  Future<void> _saveSubject() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      final auth = Provider.of<AuthService>(context, listen: false);
-      final subjectService = SubjectService(auth);
-
-      try {
-        if (widget.subject == null) {
-          await subjectService.createSubject(_name);
-        } else {
-
-
-        }
-        Navigator.pop(context);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save subject: $e')),
-        );
-      }
-    }
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 }

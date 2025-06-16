@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../auth/auth_service.dart';
+import 'package:frontend/auth/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   final Function() onLoginClicked;
   final Function() onRegisterSuccess;
 
   const RegisterScreen({
-    Key? key,
+    super.key,
     required this.onLoginClicked,
     required this.onRegisterSuccess,
-  }) : super(key: key);
+  });
 
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -25,7 +25,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   String? _selectedRole;
 
-
   final List<String> _roleOptions = ['ROLE_STUDENT', 'ROLE_PROFESSOR'];
 
   @override
@@ -38,7 +37,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           key: _formKey,
           child: ListView(
             children: [
-
               TextFormField(
                 controller: _indexController,
                 decoration: const InputDecoration(
@@ -53,8 +51,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 12),
-
-
               TextFormField(
                 controller: _fullNameController,
                 decoration: const InputDecoration(
@@ -69,8 +65,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 12),
-
-
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -89,8 +83,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 12),
-
-
               TextFormField(
                 controller: _passwordController,
                 decoration: const InputDecoration(
@@ -109,8 +101,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 12),
-
-
               DropdownButtonFormField<String>(
                 value: _selectedRole,
                 decoration: const InputDecoration(
@@ -137,18 +127,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 24),
-
-
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
-                onPressed: _register,
-                child: const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Text('REGISTER', style: TextStyle(fontSize: 16)),
-                ),
-              ),
-
+                      onPressed: _register,
+                      child: const Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Text('REGISTER', style: TextStyle(fontSize: 16)),
+                      ),
+                    ),
               TextButton(
                 onPressed: widget.onLoginClicked,
                 child: const Text(

@@ -4,8 +4,8 @@ import 'package:frontend/screens/join_session_screen.dart';
 import 'package:frontend/screens/sessions_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../auth/auth_service.dart';
-import '../auth/auth_wrapper.dart';
+import 'package:frontend/auth/auth_service.dart';
+import 'package:frontend/auth/auth_wrapper.dart';
 import 'create_subjects_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,7 +23,6 @@ class _HomePageState extends State<HomePage> {
     final isStudent = auth.userRoles?.contains('ROLE_STUDENT') ?? false;
 
     print("User roles: ${auth.userRoles}");
-
 
     return Scaffold(
       appBar: AppBar(
@@ -58,7 +57,6 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 20),
             ],
-
             if (isProfessor) ...[
               ElevatedButton(
                 onPressed: () {
@@ -77,15 +75,14 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SubjectsScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const SubjectsScreen()),
                   );
                 },
                 child: const Text("Manage Subjects"),
               ),
               const SizedBox(height: 20),
             ],
-
-
             if (isStudent) ...[
               ElevatedButton(
                 onPressed: () {
