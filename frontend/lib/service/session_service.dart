@@ -14,6 +14,7 @@ class SessionService {
     };
     final response = await makePostRequest('sessions/create', sessionData);
 
+
     if (response.statusCode != 200) {
       throw Exception('Failed to create session: ${response.body}');
     }
