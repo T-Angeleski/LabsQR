@@ -3,7 +3,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/session_detail_screen.dart';
 import 'package:frontend/service/session_service.dart';
+import 'package:frontend/service/student_session_service.dart';
 import 'package:frontend/service/subject_service.dart';
+import 'package:frontend/service/user_service.dart';
 import 'package:frontend/sessionManager/session_manager.dart';
 import 'package:provider/provider.dart';
 import 'auth/auth_service.dart';
@@ -29,7 +31,10 @@ void main() async {
           create: (context) => SessionService(),
         ),
         Provider<SubjectService>(
-          create: (context) => SubjectService(authService),
+          create: (context) => SubjectService(),
+        ),
+        Provider<StudentSessionService>(
+          create: (context) => StudentSessionService(),
         ),
       ],
       child: const MyApp(),
@@ -61,7 +66,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
@@ -127,4 +131,3 @@ class _AuthWrapperState extends State<AuthWrapper> {
     }
   }
 }
-

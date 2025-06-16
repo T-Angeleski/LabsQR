@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../auth/auth_service.dart';
-
+import 'package:frontend/auth/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   final Function() onRegisterClicked;
   final Function() onLoginSuccess;
 
   const LoginScreen({
-    Key? key,
+    super.key,
     required this.onRegisterClicked,
     required this.onLoginSuccess,
-  }) : super(key: key);
+  });
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -59,9 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
               _isLoading
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
-                onPressed: _login,
-                child: const Text('Login'),
-              ),
+                      onPressed: _login,
+                      child: const Text('Login'),
+                    ),
               TextButton(
                 onPressed: widget.onRegisterClicked,
                 child: const Text('Create an account'),

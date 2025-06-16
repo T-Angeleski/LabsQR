@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../sessionManager/session_manager.dart';
+import 'package:frontend/sessionManager/session_manager.dart';
 
 class AuthService {
   static const String baseUrl = 'http://10.0.2.2:8080/auth';
@@ -26,23 +26,18 @@ class AuthService {
     return authService;
   }
 
-
   static const String _jwtTokenKey = 'jwt_token';
   static const String _userRolesKey = 'user_roles';
   static const String _inSessionKey = 'in_session';
   static const String _sessionDataKey = 'session_data';
 
-  Future<void> _initialize() async {
-  }
-
-
   Future<Map<String, dynamic>> register(
-      String fullName,
-      String email,
-      String password,
-      String role,
-      String index,
-      ) async {
+    String fullName,
+    String email,
+    String password,
+    String role,
+    String index,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/signup'),

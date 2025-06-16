@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../sessionManager/session_manager.dart';
+import 'package:frontend/sessionManager/session_manager.dart';
 
 class SessionDetailsScreen extends StatefulWidget {
   const SessionDetailsScreen({super.key});
@@ -98,7 +98,8 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
               ElevatedButton(
                 onPressed: _endSession,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 ),
                 child: const Text(
                   'END SESSION',

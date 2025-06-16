@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/student_session.dart';
-import 'package:frontend/service/session_service.dart';
+import 'package:frontend/service/student_session_service.dart';
+import 'package:frontend/util/date_util.dart';
 
 class StudentSessionsScreen extends StatefulWidget {
   final String sessionId;
@@ -12,7 +13,7 @@ class StudentSessionsScreen extends StatefulWidget {
 
 class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
   late Future<List<StudentSession>> futureStudentSessions;
-  final SessionService _sessionService = SessionService();
+  final StudentSessionService _studentSessionService = StudentSessionService();
   final Map<String, String> _tempGrades = {};
 
   @override
@@ -23,7 +24,8 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
 
   Future<List<StudentSession>> _fetchStudentSessions() async {
     try {
-      return await _sessionService.fetchStudentSessions(widget.sessionId);
+      return await _studentSessionService
+          .fetchStudentSessions(widget.sessionId);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load sessions: $e')),
@@ -83,7 +85,8 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Grade submission to server not implemented yet'),
+                    content:
+                        Text('Grade submission to server not implemented yet'),
                     duration: Duration(seconds: 2),
                   ),
                 );
@@ -142,15 +145,18 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
 
                 return ListTile(
                   leading: const Icon(Icons.person),
-                  title: Text(session.student?.fullName ?? 'Student ${index + 1}'),
+                  title:
+                      Text(session.student?.fullName ?? 'Student ${index + 1}'),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Joined: ${_formatDate(session.joinedAt)}'),
+                      Text('Joined: ${formatDate(session.joinedAt)}'),
                       Text(
                         session.attendanceChecked ? 'Present' : 'Absent',
                         style: TextStyle(
-                          color: session.attendanceChecked ? Colors.green : Colors.red,
+                          color: session.attendanceChecked
+                              ? Colors.green
+                              : Colors.red,
                         ),
                       ),
                     ],
@@ -159,7 +165,8 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                     gradeDisplay!,
                     style: TextStyle(
                       color: hasTempGrade ? Colors.blue : Colors.black,
-                      fontWeight: hasTempGrade ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          hasTempGrade ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
                   onTap: () => _showGradeDialog(session),
@@ -170,9 +177,5 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
         },
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }
 }

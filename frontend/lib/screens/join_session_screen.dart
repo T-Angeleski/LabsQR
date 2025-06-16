@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/session_detail_screen.dart';
-import 'package:frontend/service/session_service.dart';
+import 'package:frontend/service/student_session_service.dart';
 import 'package:provider/provider.dart';
 
-import '../auth/auth_service.dart';
+import 'package:frontend/auth/auth_service.dart';
 
 class JoinSessionScreen extends StatefulWidget {
   const JoinSessionScreen({super.key});
@@ -15,11 +14,12 @@ class JoinSessionScreen extends StatefulWidget {
 
 class _JoinSessionScreenState extends State<JoinSessionScreen> {
   final _sessionIdController = TextEditingController();
-  final _sessionService = StudentSessionService();
   bool _isLoading = false;
 
   Future<void> _joinSession() async {
     final sessionId = _sessionIdController.text.trim();
+    final _studentSessionService =
+        Provider.of<StudentSessionService>(context, listen: false);
     if (sessionId.isEmpty) {
       _showSnackBar("Please enter a session ID");
       return;
@@ -28,16 +28,13 @@ class _JoinSessionScreenState extends State<JoinSessionScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // 1. Call backend to join the session
-      final sessionData = await _sessionService.joinSession(sessionId);
+      final sessionData = await _studentSessionService.joinSession(sessionId);
 
-      // 2. Persist session locally (for reopening after app restart)
       final authService = Provider.of<AuthService>(context, listen: false);
-      await authService.startSession(sessionData); // Store session data in SharedPreferences
+      await authService.startSession(sessionData);
 
       if (!mounted) return;
 
-      // 3. Navigate to session details
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -51,7 +48,6 @@ class _JoinSessionScreenState extends State<JoinSessionScreen> {
       if (mounted) setState(() => _isLoading = false);
     }
   }
-
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
