@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/auth/auth_wrapper.dart';
 import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/session_detail_screen.dart';
 import 'package:frontend/service/session_service.dart';
@@ -9,7 +10,6 @@ import 'package:frontend/service/user_service.dart';
 import 'package:frontend/sessionManager/session_manager.dart';
 import 'package:provider/provider.dart';
 import 'auth/auth_service.dart';
-import 'auth/auth_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,70 +64,5 @@ class MyApp extends StatelessWidget {
         return null;
       },
     );
-  }
-}
-
-class AuthWrapper extends StatefulWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  State<AuthWrapper> createState() => _AuthWrapperState();
-}
-
-class _AuthWrapperState extends State<AuthWrapper> {
-  bool _initialized = false;
-  bool _isInSession = false;
-  bool _isLoggedIn = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _initialize();
-  }
-
-  Future<void> _initialize() async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final sessionManager = SessionManager();
-
-    await Future.wait([
-      sessionManager.loadSessionState(),
-      authService.loadAuthState(),
-    ]);
-
-    final sessionActive = await sessionManager.checkSessionActive();
-    final loggedIn = await authService.isLoggedIn();
-
-    if (mounted) {
-      setState(() {
-        _isInSession = sessionActive;
-        _isLoggedIn = loggedIn;
-        _initialized = true;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_initialized) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_isInSession) {
-      return WillPopScope(
-        onWillPop: () async {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please end the session first')),
-          );
-          return false;
-        },
-        child: const SessionDetailsScreen(),
-      );
-    } else if (_isLoggedIn) {
-      return const HomePage();
-    } else {
-      return const AuthScreen();
-    }
   }
 }

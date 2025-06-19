@@ -29,5 +29,5 @@ class Grade {
     );
   }
 
-  get value => null;
+  get value => (points / maxPoints) * 100;
 }
