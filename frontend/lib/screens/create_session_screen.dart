@@ -25,21 +25,10 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
   List<Subject> _subjects = [];
   bool _isLoading = true;
 
-  bool _initialized = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_initialized) {
-      _initialized = true;
-      _loadTeachersAndSubjects();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    print("Dobrobe");
+    _loadTeachersAndSubjects();
   }
 
   Future<void> _loadTeachersAndSubjects() async {
@@ -48,23 +37,19 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
       final subjectService =
           Provider.of<SubjectService>(context, listen: false);
 
-      print('Fetching users...');
-      final teachers = await userService.getTeachers();
-      print("Teachers: $teachers");
-
-      print('Fetching subjects...');
-      final subjects = await subjectService.getSubjects();
-      print('Raw subjects response: $subjects');
+      final results = await Future.wait([
+        userService.getTeachers(),
+        subjectService.getSubjects(),
+      ]);
 
       if (mounted) {
         setState(() {
-          _teachers = teachers;
-          _subjects = subjects;
+          _teachers = results[0] as List<Teacher>;
+          _subjects = results[1] as List<Subject>;
           _isLoading = false;
         });
       }
     } catch (e) {
-      print('Error loading data: $e');
       if (mounted) {
         setState(() => _isLoading = false);
         _showSnackBar("Failed to load data: $e");
@@ -101,6 +86,7 @@ class _CreateSessionScreenState extends State<CreateSessionScreen> {
   }
 
   void _showSnackBar(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );

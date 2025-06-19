@@ -1,22 +1,32 @@
 name: frontend
-description: "A new Flutter project."
+description: "Android app for labs management"
 publish_to: "none"
-version: 0.1.0
+version: 1.0.0+1
 
 environment:
   sdk: ^3.5.4
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
+  # HTTP and networking
   http: ^1.2.2
-  flutter_secure_storage: ^9.2.4
+
+  # State management
   provider: ^6.1.5
+
+  # Storage
+  flutter_secure_storage: ^9.2.4
+  shared_preferences: ^2.5.3
+
+  # Authentication
   jwt_decoder: ^2.0.1
+
+  # QR and camera
   qr_code_scanner_plus: ^2.0.10+1
   image_picker: ^1.0.4
-  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
