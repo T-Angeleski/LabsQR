@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/create_session_screen.dart';
 import 'package:frontend/screens/join_session_screen.dart';
+import 'package:frontend/screens/qr_scanner_screen.dart';
 import 'package:frontend/screens/sessions_screen.dart';
+import 'package:frontend/screens/student_sessions_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:frontend/auth/auth_service.dart';
 import 'package:frontend/auth/auth_wrapper.dart';
+import '../service/student_session_service.dart';
 import 'create_subjects_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -246,13 +249,38 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           'Scan QR code to join a lab session',
                                       icon: Icons.qr_code_scanner,
                                       color: Colors.orange,
-                                      onTap: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const JoinSessionScreen(),
-                                        ),
-                                      ),
+                                      // onTap: () => Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //     builder: (context) =>
+                                      //         const JoinSessionScreen(),
+                                      //   ),
+                                      // ),
+                                      onTap: () async {
+                                        final result = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => QrScannerScreen(
+                                              onScanned: (sessionId) async {
+                                                try {
+                                                  final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
+                                                  await studentSessionService.joinSession(sessionId);
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => StudentSessionsScreen(sessionId: sessionId),
+                                                    ),
+                                                  );
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Failed to join session: $e')),
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                     const SizedBox(height: 16),
                                     _buildInfoCard(

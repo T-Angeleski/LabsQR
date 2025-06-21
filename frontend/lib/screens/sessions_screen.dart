@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/show_qr_code_screen.dart';
 import 'package:frontend/screens/student_sessions_screen.dart';
 import 'package:frontend/service/session_service.dart';
 import 'package:frontend/models/session.dart';
@@ -252,6 +253,32 @@ class _SessionsScreenState extends State<SessionsScreen> {
                   label: const Text('View Students'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: statusColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShowQrCodeScreen(
+                          qrCodeBytes: session.qrCode,
+                        ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.qr_code),
+                  label: const Text('Show QR Code'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class Session {
   final String id;
   final String teacherId;
@@ -7,6 +9,7 @@ class Session {
   final String teacherName;
   final String subjectName;
   final bool isExpired;
+  final List<int> qrCode;
 
   Session({
     required this.id,
@@ -17,6 +20,7 @@ class Session {
     required this.teacherName,
     required this.subjectName,
     required this.isExpired,
+    required this.qrCode,
   });
 
   factory Session.fromJson(Map<String, dynamic> json) {
@@ -29,6 +33,7 @@ class Session {
       teacherName: json['teacherName'],
       subjectName: json['subjectName'],
       isExpired: json['isExpired'] ?? false,
+      qrCode: base64Decode(json['qrCode']),
     );
   }
 }
