@@ -2,7 +2,7 @@ package mk.ukim.finki.LabsProject.web;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import mk.ukim.finki.LabsProject.model.LoginResponse;
+import mk.ukim.finki.LabsProject.model.dto.LoginResponse;
 import mk.ukim.finki.LabsProject.model.User;
 import mk.ukim.finki.LabsProject.model.dto.LoginRequestDTO;
 import mk.ukim.finki.LabsProject.model.dto.RegisterRequestDTO;

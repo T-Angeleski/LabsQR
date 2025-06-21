@@ -129,6 +129,7 @@ class AuthService {
   }
 
   bool get isInSession => _prefs.getBool(_inSessionKey) ?? false;
+  get userEmail => _prefs.getString('user_email'); // TODO: fix
 
   Map<String, dynamic>? get currentSessionData {
     final sessionData = _prefs.getString(_sessionDataKey);

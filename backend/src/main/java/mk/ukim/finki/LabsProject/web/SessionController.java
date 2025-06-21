@@ -21,7 +21,7 @@ import java.util.*;
 public class SessionController {
     private final SessionService sessionService;
 
-    @PreAuthorize("hasRole('PROFESSOR')")
+//    @PreAuthorize("hasRole('PROFESSOR')") Temporary visible to all for testing on app
     @GetMapping("/sessions")
     @Operation(summary = "Get all sessions", description = "Returns a list of all available sessions")
     public ResponseEntity<List<SessionDTO>> getSessions() {

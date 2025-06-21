@@ -1,4 +1,4 @@
-package mk.ukim.finki.LabsProject.model;
+package mk.ukim.finki.LabsProject.model.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
