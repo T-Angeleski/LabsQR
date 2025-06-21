@@ -9,11 +9,10 @@ import java.io.ByteArrayOutputStream;
 
 public class QRCodeGenerator {
     static QRCodeWriter qrCodeWriter = new QRCodeWriter();
-    static ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
     private static final int IMAGE_DIMENSION = 200;
 
     public static byte[] generateQrCode(String text) {
-        try {
+        try (ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream()) {
             BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, IMAGE_DIMENSION, IMAGE_DIMENSION);
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
             return pngOutputStream.toByteArray();
@@ -22,3 +21,4 @@ public class QRCodeGenerator {
         }
     }
 }
+
