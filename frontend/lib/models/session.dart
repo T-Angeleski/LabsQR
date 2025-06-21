@@ -1,43 +1,34 @@
-import 'package:frontend/models/student_session.dart';
-
 class Session {
   final String id;
-  final String createdAt;
+  final String teacherId;
+  final String subjectId;
   final int durationInMinutes;
-  final List<StudentSession>? studentSessions;
-  final String qrCodeBase64;
+  final DateTime createdAt;
+  final String teacherName;
+  final String subjectName;
+  final bool isExpired;
 
   Session({
     required this.id,
-    required this.createdAt,
+    required this.teacherId,
+    required this.subjectId,
     required this.durationInMinutes,
-    this.studentSessions,
-    required this.qrCodeBase64,
+    required this.createdAt,
+    required this.teacherName,
+    required this.subjectName,
+    required this.isExpired,
   });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'createdAt': createdAt,
-      'durationInMinutes': durationInMinutes,
-      'qrCode': qrCodeBase64,
-      'studentSessions':
-      studentSessions?.map((session) => session.toJson()).toList(),
-    };
-  }
 
   factory Session.fromJson(Map<String, dynamic> json) {
     return Session(
-      id: json['id'] ?? 'unknown',
-      createdAt: json['createdAt'] ?? 'unknown',
-      durationInMinutes: json['durationInMinutes'] ?? 0,
-      qrCodeBase64: json['qrCode'] ?? '',
-      studentSessions: json['studentSessions'] != null
-          ? (json['studentSessions'] as List)
-          .map((studentSessionJson) =>
-          StudentSession.fromJson(studentSessionJson))
-          .toList()
-          : null,
+      id: json['id'],
+      teacherId: json['teacherId'],
+      subjectId: json['subjectId'],
+      durationInMinutes: json['durationInMinutes'],
+      createdAt: DateTime.parse(json['createdAt']),
+      teacherName: json['teacherName'],
+      subjectName: json['subjectName'],
+      isExpired: json['isExpired'] ?? false,
     );
   }
 }

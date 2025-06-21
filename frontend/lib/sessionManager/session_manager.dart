@@ -16,6 +16,7 @@ class SessionManager {
 
   bool get isInSession => _isInSession;
   DateTime? get sessionEndTime => _sessionEndTime;
+  Duration? get sessionDuration => _sessionDuration;
 
   Future<void> loadSessionState() async {
     final sessionData = await _storage.read(key: _sessionKey);

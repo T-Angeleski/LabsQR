@@ -23,7 +23,7 @@ class StudentSessionService {
   }
 
   Future<List<StudentSession>> fetchStudentSessions(String sessionId) async {
-    final response = await makeGetRequest('sessions/$sessionId');
+    final response = await makeGetRequest('student-sessions/$sessionId');
     return handleResponse<List<StudentSession>>(
       response,
       (data) {
