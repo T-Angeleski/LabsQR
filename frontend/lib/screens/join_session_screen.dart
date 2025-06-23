@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/session.dart';
-import 'package:frontend/screens/session_detail_screen.dart';
 import 'package:frontend/service/session_service.dart';
 import 'package:frontend/service/student_session_service.dart';
 import 'package:frontend/util/date_util.dart';
@@ -98,12 +97,13 @@ class _JoinSessionScreenState extends State<JoinSessionScreen> {
 
       if (!mounted) return;
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const SessionDetailsScreen(),
-        ),
-      );
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => const SessionDetailsScreen(),
+      //
+      //   ),
+      // );
     } catch (e) {
       if (!mounted) return;
       _showSnackBar('Failed to join session: ${e.toString()}');

@@ -10,6 +10,7 @@ import mk.ukim.finki.LabsProject.model.dto.SubjectDTO;
 
 public interface SubjectService {
     List<SubjectDTO> getAllSubjects();
+    SubjectDTO findByName(String name);
     SubjectDTO create(CreateSubjectDTO subjectDTO);
 
     SubjectDTO findById(UUID id);

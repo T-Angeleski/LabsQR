@@ -8,6 +8,18 @@ class SubjectService {
         response, (data) => parseListResponse(data, Subject.fromJson));
   }
 
+  Future<Subject> getSubjectById(String subjectId) async {
+    final response = await makeGetRequest('subjects/$subjectId');
+    return handleResponse<Subject>(
+        response, (data) => Subject.fromJson(data));
+  }
+
+  Future<Subject> getSubjectByName(String name) async {
+    final response = await makeGetRequest('subjects/$name');
+    return handleResponse<Subject>(
+        response, (data) => Subject.fromJson(data));
+  }
+
   Future<Subject> createSubject(String name) async {
     if (name.trim().isEmpty) {
       throw Exception('Subject name cannot be empty');

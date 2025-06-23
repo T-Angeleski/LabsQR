@@ -14,4 +14,5 @@ public interface StudentSessionRepository extends JpaRepository<StudentSession, 
     StudentSession findStudentSessionById(UUID studentSessionUuid);
 
     boolean existsByStudentIdAndSessionId(UUID studentId, UUID sessionId);
+    StudentSession findByStudentId(UUID studentId);
 }

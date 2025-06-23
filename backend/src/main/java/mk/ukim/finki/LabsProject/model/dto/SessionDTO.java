@@ -32,6 +32,7 @@ public class SessionDTO {
         dto.setSubjectId(session.getSubject().getId());
         dto.setSubjectName(session.getSubject().getName());
         dto.setExpired(session.isExpired());
+        dto.setQrCode(session.getQrCode());
         return dto;
     }
 
@@ -41,8 +42,4 @@ public class SessionDTO {
                 .collect(Collectors.toList());
     }
 
-    public static SessionDTO setQrCode(SessionDTO sessionDTO, byte[] qrCode) {
-        sessionDTO.setQrCode(qrCode);
-        return sessionDTO;
-    }
 }

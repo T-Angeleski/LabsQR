@@ -2,8 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend/sessionManager/session_manager.dart';
 
+import '../models/subject.dart';
+
 class SessionDetailsScreen extends StatefulWidget {
-  const SessionDetailsScreen({super.key});
+  final Subject? subject;
+
+  const SessionDetailsScreen({super.key, required this.subject});
 
   @override
   State<SessionDetailsScreen> createState() => _SessionDetailsScreenState();
@@ -217,6 +221,35 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                             fontWeight: FontWeight.bold,
                             color: Colors.green,
                           ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Subject display
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.purple.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.book, color: Colors.purple),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    widget.subject?.name ?? 'No subject',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.purple,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
 

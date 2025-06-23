@@ -12,6 +12,7 @@ import mk.ukim.finki.LabsProject.repository.SessionRepository;
 import mk.ukim.finki.LabsProject.repository.SubjectRepository;
 import mk.ukim.finki.LabsProject.repository.UserRepository;
 import mk.ukim.finki.LabsProject.service.interfaces.SessionService;
+import mk.ukim.finki.LabsProject.util.QRCodeGenerator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -48,7 +49,14 @@ public class SessionServiceImpl implements SessionService {
         session.setTeacher(teacher);
         session.setSubject(subject);
         session.setCreatedAt(LocalDateTime.now());
+
         Session savedSession = sessionRepository.save(session);
+
+        String qrCodeText = savedSession.getId().toString();
+        byte[] qrCodeImage = QRCodeGenerator.generateQrCode(qrCodeText);
+        savedSession.setQrCode(qrCodeImage);
+
+        savedSession = sessionRepository.save(session);
 
         return SessionDTO.from(savedSession);
     }

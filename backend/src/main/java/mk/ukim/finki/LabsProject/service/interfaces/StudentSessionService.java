@@ -18,4 +18,5 @@ public interface StudentSessionService {
     List<StudentSessionDTO> getStudentSessionsBySessionId(UUID sessionUuid);
 
     Optional<StudentSession> findById(UUID studentSessionId);
+    StudentSessionDTO getStudentSessionByStudentId(UUID studentId);
 }

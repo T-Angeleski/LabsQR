@@ -20,6 +20,12 @@ class SessionService {
     }
   }
 
+  Future<Session> getSessionById(String sessionId) async {
+    final response = await makeGetRequest('sessions/$sessionId');
+    return handleResponse<Session>(
+        response, (data) => Session.fromJson(data));
+  }
+
   Future<List<Session>> fetchSessions() async {
     final response = await makeGetRequest(
         'sessions/sessions'); // TODO: remove double sessions once backend fixed

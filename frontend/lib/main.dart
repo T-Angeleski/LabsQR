@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: const AuthWrapper(),
       routes: {
-        '/session': (context) => const SessionDetailsScreen(),
+        '/session': (context) => const SessionDetailsScreen(subject: null,),
         '/home': (context) => const HomePage(),
         '/login': (context) => const AuthScreen(),
       },
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         print("Session manager is in session: ${SessionManager().isInSession}");
         if (SessionManager().isInSession && settings.name != '/session') {
           return MaterialPageRoute(
-            builder: (context) => const SessionDetailsScreen(),
+            builder: (context) => const SessionDetailsScreen(subject: null,),
           );
         }
         return null;

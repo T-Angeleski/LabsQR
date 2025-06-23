@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/create_session_screen.dart';
-import 'package:frontend/screens/join_session_screen.dart';
 import 'package:frontend/screens/qr_scanner_screen.dart';
+import 'package:frontend/screens/session_detail_screen.dart';
 import 'package:frontend/screens/sessions_screen.dart';
-import 'package:frontend/screens/student_sessions_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:frontend/auth/auth_service.dart';
 import 'package:frontend/auth/auth_wrapper.dart';
+import '../service/session_service.dart';
 import '../service/student_session_service.dart';
+import '../service/subject_service.dart';
 import 'create_subjects_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -264,17 +265,31 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               onScanned: (sessionId) async {
                                                 try {
                                                   final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
+                                                  final sessionService = Provider.of<SessionService>(context, listen: false);
+                                                  final authService = Provider.of<AuthService>(context, listen: false);
+                                                  final subjectService = Provider.of<SubjectService>(context, listen: false);
+
                                                   await studentSessionService.joinSession(sessionId);
+
+                                                  final userId = await authService.getCurrentUserIdAsync();
+                                                  final joinedStudentSession = await studentSessionService.getStudentSessionByStudentId(userId);
+                                                  final joinedSession = await sessionService.getSessionById(joinedStudentSession.sessionId);
+                                                  final subject = await subjectService.getSubjectById(joinedSession.subjectId);
+                                                  
                                                   Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) => StudentSessionsScreen(sessionId: sessionId),
-                                                    ),
+                                                      builder: (context) => SessionDetailsScreen(
+                                                        subject: subject,
+                                                      ),
+                                                  ),
                                                   );
                                                 } catch (e) {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text('Failed to join session: $e')),
-                                                  );
+                                                  if (mounted) {
+                                                    ScaffoldMessenger.of(context).showSnackBar(
+                                                      SnackBar(content: Text('Failed to join session: $e')),
+                                                    );
+                                                  }
                                                 }
                                               },
                                             ),
@@ -289,6 +304,38 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           'Tap "Join Session" and scan the QR code displayed by your professor',
                                       icon: Icons.info_outline,
                                       color: Colors.blue,
+                                    ),
+                                    _buildActionCard(
+                                      title: 'Show Current Session',
+                                      subtitle: 'View the session you have joined',
+                                      icon: Icons.visibility,
+                                      color: Colors.teal,
+                                      onTap: () async {
+                                        try {
+                                          final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
+                                          final sessionService = Provider.of<SessionService>(context, listen: false);
+                                          final authService = Provider.of<AuthService>(context, listen: false);
+                                          final subjectService = Provider.of<SubjectService>(context, listen: false);
+
+                                          final userId = await authService.getCurrentUserIdAsync();
+                                          final joinedStudentSession = await studentSessionService.getStudentSessionByStudentId(userId);
+                                          final joinedSession = await sessionService.getSessionById(joinedStudentSession.sessionId);
+                                          final subject = await subjectService.getSubjectById(joinedSession.subjectId);
+
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => SessionDetailsScreen(
+                                                subject: subject,
+                                              ),
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('No active session found or failed to load: $e')),
+                                          );
+                                        }
+                                      },
                                     ),
                                   ],
                                   const SizedBox(height: 40),

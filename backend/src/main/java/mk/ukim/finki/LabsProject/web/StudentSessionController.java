@@ -32,5 +32,13 @@ public class StudentSessionController {
         return ResponseEntity.ok(studentSessionDTOS);
     }
 
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<StudentSessionDTO> getStudentSessionByUser(@PathVariable String userId) {
+        UUID userUuid = UUID.fromString(userId);
+        StudentSessionDTO dto = studentSessionService.getStudentSessionByStudentId(userUuid);
+        return ResponseEntity.ok(dto);
+    }
+
 
 }

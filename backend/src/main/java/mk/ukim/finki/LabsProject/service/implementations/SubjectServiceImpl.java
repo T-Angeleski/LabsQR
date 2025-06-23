@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.LabsProject.model.dto.CreateSubjectDTO;
 import mk.ukim.finki.LabsProject.model.dto.SubjectDTO;
@@ -21,6 +22,13 @@ public class SubjectServiceImpl implements SubjectService {
     public List<SubjectDTO> getAllSubjects() {
         List<Subject> subjects = subjectRepository.findAll();
         return SubjectDTO.from(subjects);
+    }
+
+    @Override
+    public SubjectDTO findByName(String name) {
+        Subject subject = subjectRepository.findByName(name)
+                .orElseThrow(() -> new EntityNotFoundException("Subject not found with name: " + name));
+        return SubjectDTO.from(subject);
     }
 
     @Override
