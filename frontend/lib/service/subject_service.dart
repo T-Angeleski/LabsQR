@@ -15,7 +15,7 @@ class SubjectService {
   }
 
   Future<Subject> getSubjectByName(String name) async {
-    final response = await makeGetRequest('subjects/$name');
+    final response = await makeGetRequest('subjects/name/$name');
     return handleResponse<Subject>(
         response, (data) => Subject.fromJson(data));
   }
