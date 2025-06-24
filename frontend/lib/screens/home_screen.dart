@@ -258,36 +258,70 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       //   ),
                                       // ),
                                       onTap: () async {
-                                        final result = await Navigator.push(
+                                        await Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => QrScannerScreen(
+                                            builder: (context) =>
+                                                QrScannerScreen(
                                               onScanned: (sessionId) async {
                                                 try {
-                                                  final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
-                                                  final sessionService = Provider.of<SessionService>(context, listen: false);
-                                                  final authService = Provider.of<AuthService>(context, listen: false);
-                                                  final subjectService = Provider.of<SubjectService>(context, listen: false);
+                                                  final studentSessionService =
+                                                      Provider.of<
+                                                              StudentSessionService>(
+                                                          context,
+                                                          listen: false);
+                                                  final sessionService =
+                                                      Provider.of<
+                                                              SessionService>(
+                                                          context,
+                                                          listen: false);
+                                                  final authService =
+                                                      Provider.of<AuthService>(
+                                                          context,
+                                                          listen: false);
+                                                  final subjectService =
+                                                      Provider.of<
+                                                              SubjectService>(
+                                                          context,
+                                                          listen: false);
 
-                                                  await studentSessionService.joinSession(sessionId);
+                                                  await studentSessionService
+                                                      .joinSession(sessionId);
 
-                                                  final userId = await authService.getCurrentUserIdAsync();
-                                                  final joinedStudentSession = await studentSessionService.getStudentSessionByStudentId(userId);
-                                                  final joinedSession = await sessionService.getSessionById(joinedStudentSession.sessionId);
-                                                  final subject = await subjectService.getSubjectById(joinedSession.subjectId);
-                                                  
+                                                  final userId = await authService
+                                                      .getCurrentUserIdAsync();
+                                                  final joinedStudentSession =
+                                                      await studentSessionService
+                                                          .getStudentSessionByStudentId(
+                                                              userId);
+                                                  final joinedSession =
+                                                      await sessionService
+                                                          .getSessionById(
+                                                              joinedStudentSession
+                                                                  .sessionId);
+                                                  final subject =
+                                                      await subjectService
+                                                          .getSubjectById(
+                                                              joinedSession
+                                                                  .subjectId);
+
                                                   Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) => SessionDetailsScreen(
+                                                      builder: (context) =>
+                                                          SessionDetailsScreen(
                                                         subject: subject,
                                                       ),
-                                                  ),
+                                                    ),
                                                   );
                                                 } catch (e) {
                                                   if (mounted) {
-                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                      SnackBar(content: Text('Failed to join session: $e')),
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                          content: Text(
+                                                              'Failed to join session: $e')),
                                                     );
                                                   }
                                                 }
@@ -307,32 +341,58 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     ),
                                     _buildActionCard(
                                       title: 'Show Current Session',
-                                      subtitle: 'View the session you have joined',
+                                      subtitle:
+                                          'View the session you have joined',
                                       icon: Icons.visibility,
                                       color: Colors.teal,
                                       onTap: () async {
                                         try {
-                                          final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
-                                          final sessionService = Provider.of<SessionService>(context, listen: false);
-                                          final authService = Provider.of<AuthService>(context, listen: false);
-                                          final subjectService = Provider.of<SubjectService>(context, listen: false);
+                                          final studentSessionService = Provider
+                                              .of<StudentSessionService>(
+                                                  context,
+                                                  listen: false);
+                                          final sessionService =
+                                              Provider.of<SessionService>(
+                                                  context,
+                                                  listen: false);
+                                          final authService =
+                                              Provider.of<AuthService>(context,
+                                                  listen: false);
+                                          final subjectService =
+                                              Provider.of<SubjectService>(
+                                                  context,
+                                                  listen: false);
 
-                                          final userId = await authService.getCurrentUserIdAsync();
-                                          final joinedStudentSession = await studentSessionService.getStudentSessionByStudentId(userId);
-                                          final joinedSession = await sessionService.getSessionById(joinedStudentSession.sessionId);
-                                          final subject = await subjectService.getSubjectById(joinedSession.subjectId);
+                                          final userId = await authService
+                                              .getCurrentUserIdAsync();
+                                          final joinedStudentSession =
+                                              await studentSessionService
+                                                  .getStudentSessionByStudentId(
+                                                      userId);
+                                          final joinedSession =
+                                              await sessionService
+                                                  .getSessionById(
+                                                      joinedStudentSession
+                                                          .sessionId);
+                                          final subject = await subjectService
+                                              .getSubjectById(
+                                                  joinedSession.subjectId);
 
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => SessionDetailsScreen(
+                                              builder: (context) =>
+                                                  SessionDetailsScreen(
                                                 subject: subject,
                                               ),
                                             ),
                                           );
                                         } catch (e) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('No active session found or failed to load: $e')),
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'No active session found or failed to load: $e')),
                                           );
                                         }
                                       },

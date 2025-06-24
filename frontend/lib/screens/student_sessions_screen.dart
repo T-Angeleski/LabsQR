@@ -5,8 +5,8 @@ import 'package:frontend/models/student_session.dart';
 import 'package:frontend/service/student_session_service.dart';
 import 'package:frontend/util/date_util.dart';
 
-import '../models/grade.dart';
-import '../service/grade_service.dart';
+import 'package:frontend/models/grade.dart';
+import 'package:frontend/service/grade_service.dart';
 
 class StudentSessionsScreen extends StatefulWidget {
   final String sessionId;
@@ -28,7 +28,8 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
 
   Future<List<StudentSession>> _fetchStudentSessions() async {
     try {
-      return await _studentSessionService.fetchStudentSessions(widget.sessionId);
+      return await _studentSessionService
+          .fetchStudentSessions(widget.sessionId);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -49,9 +50,12 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
     final gradeService = GradeService();
     final currentGrade = session.grade;
 
-    final pointsController = TextEditingController(text: currentGrade?.points.toString() ?? '');
-    final maxPointsController = TextEditingController(text: currentGrade?.maxPoints.toString() ?? '10');
-    final noteController = TextEditingController(text: currentGrade?.note ?? '');
+    final pointsController =
+        TextEditingController(text: currentGrade?.points.toString() ?? '');
+    final maxPointsController =
+        TextEditingController(text: currentGrade?.maxPoints.toString() ?? '10');
+    final noteController =
+        TextEditingController(text: currentGrade?.note ?? '');
 
     final formKey = GlobalKey<FormState>();
 
@@ -64,7 +68,8 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
             bool isSubmitting = false;
 
             return AlertDialog(
-              title: Text('Grade ${session.displayName}', style: const TextStyle(fontSize: 18)),
+              title: Text('Grade ${session.displayName}',
+                  style: const TextStyle(fontSize: 18)),
               content: Form(
                 key: formKey,
                 child: SingleChildScrollView(
@@ -77,14 +82,23 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                           Expanded(
                             child: TextFormField(
                               controller: pointsController,
-                              decoration: const InputDecoration(labelText: 'Points', border: OutlineInputBorder()),
+                              decoration: const InputDecoration(
+                                  labelText: 'Points',
+                                  border: OutlineInputBorder()),
                               keyboardType: TextInputType.number,
                               validator: (value) {
-                                if (value == null || value.isEmpty) return 'Required';
+                                if (value == null || value.isEmpty) {
+                                  return 'Required';
+                                }
                                 final points = int.tryParse(value);
-                                final maxPoints = int.tryParse(maxPointsController.text);
-                                if (points == null || points < 0) return 'Invalid';
-                                if (maxPoints != null && points > maxPoints) return 'Pts > Max';
+                                final maxPoints =
+                                    int.tryParse(maxPointsController.text);
+                                if (points == null || points < 0) {
+                                  return 'Invalid';
+                                }
+                                if (maxPoints != null && points > maxPoints) {
+                                  return 'Pts > Max';
+                                }
                                 return null;
                               },
                             ),
@@ -93,11 +107,16 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                           Expanded(
                             child: TextFormField(
                               controller: maxPointsController,
-                              decoration: const InputDecoration(labelText: 'Max Points', border: OutlineInputBorder()),
+                              decoration: const InputDecoration(
+                                  labelText: 'Max Points',
+                                  border: OutlineInputBorder()),
                               keyboardType: TextInputType.number,
                               validator: (value) {
-                                if (value == null || value.isEmpty) return 'Required';
-                                if (int.tryParse(value) == null || int.parse(value) <= 0) return 'Invalid';
+                                if (value == null || value.isEmpty) {
+                                  return 'Required';
+                                }
+                                if (int.tryParse(value) == null ||
+                                    int.parse(value) <= 0) return 'Invalid';
                                 return null;
                               },
                             ),
@@ -105,11 +124,11 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                         ],
                       ),
                       const SizedBox(height: 16),
-
-
                       TextFormField(
                         controller: noteController,
-                        decoration: const InputDecoration(labelText: 'Note (optional)', border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                            labelText: 'Note (optional)',
+                            border: OutlineInputBorder()),
                         maxLines: 3,
                       ),
                     ],
@@ -118,42 +137,52 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
               ),
               actions: [
                 TextButton(
-                  onPressed: isSubmitting ? null : () => Navigator.pop(context, null),
+                  onPressed:
+                      isSubmitting ? null : () => Navigator.pop(context, null),
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
                   onPressed: isSubmitting
                       ? null
                       : () async {
-                    if (formKey.currentState!.validate()) {
-                      setState(() => isSubmitting = true);
-                      try {
-                        final grade = await gradeService.createOrUpdateGrade(
-                          studentSessionId: session.id,
-                          points: int.parse(pointsController.text),
-                          maxPoints: int.parse(maxPointsController.text),
-                          note: noteController.text,
-                        );
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Grade saved for ${session.displayName}'),
-                            backgroundColor: Colors.green,
-                          ));
-                          Navigator.pop(context, grade);
-                        }
-                      } catch (e) {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Error: ${e.toString().replaceAll('Exception: ', '')}'),
-                            backgroundColor: Colors.red,
-                          ));
-                          setState(() => isSubmitting = false);
-                        }
-                      }
-                    }
-                  },
+                          if (formKey.currentState!.validate()) {
+                            setState(() => isSubmitting = true);
+                            try {
+                              final grade =
+                                  await gradeService.createOrUpdateGrade(
+                                studentSessionId: session.id,
+                                points: int.parse(pointsController.text),
+                                maxPoints: int.parse(maxPointsController.text),
+                                note: noteController.text,
+                              );
+                              if (mounted) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(
+                                      'Grade saved for ${session.displayName}'),
+                                  backgroundColor: Colors.green,
+                                ));
+                                Navigator.pop(context, grade);
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(
+                                      'Error: ${e.toString().replaceAll('Exception: ', '')}'),
+                                  backgroundColor: Colors.red,
+                                ));
+                                setState(() => isSubmitting = false);
+                              }
+                            }
+                          }
+                        },
                   child: isSubmitting
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.white))
                       : const Text('Save'),
                 ),
               ],
@@ -171,12 +200,12 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${session.displayName} marked as ${session.attendanceChecked ? 'Present' : 'Absent'}'),
+        content: Text(
+            '${session.displayName} marked as ${session.attendanceChecked ? 'Present' : 'Absent'}'),
         duration: const Duration(seconds: 2),
       ),
     );
   }
-
 
   Widget _buildGradeChip(Grade? grade) {
     if (grade == null) {
@@ -196,7 +225,8 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
         ),
       ),
       backgroundColor: Theme.of(context).primaryColor.withOpacity(0.15),
-      avatar: Icon(Icons.grade, size: 16, color: Theme.of(context).primaryColor),
+      avatar:
+          Icon(Icons.grade, size: 16, color: Theme.of(context).primaryColor),
     );
   }
 
@@ -209,7 +239,8 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
         size: 16,
       ),
       label: Text(session.attendanceChecked ? 'Present' : 'Absent'),
-      backgroundColor: (session.attendanceChecked ? Colors.green : Colors.red).withOpacity(0.1),
+      backgroundColor: (session.attendanceChecked ? Colors.green : Colors.red)
+          .withOpacity(0.1),
     );
   }
 
@@ -221,10 +252,15 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
         key: ValueKey(session.id),
         leading: CircleAvatar(
           backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-          child: Text('${index + 1}', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+          child: Text('${index + 1}',
+              style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.bold)),
         ),
-        title: Text(session.displayName, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(session.studentIndex ?? session.displayEmail ?? 'No identifier'),
+        title: Text(session.displayName,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(
+            session.studentIndex ?? session.displayEmail ?? 'No identifier'),
         trailing: _buildGradeChip(session.grade),
         children: [
           Padding(
@@ -236,15 +272,22 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Joined: ${formatDate(session.joinedAt)}', style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+                      Text('Joined: ${formatDate(session.joinedAt)}',
+                          style:
+                              TextStyle(fontSize: 12, color: Colors.grey[700])),
                       if (session.grade?.note?.isNotEmpty ?? false) ...[
                         const SizedBox(height: 8),
-                        Text('Note: ${session.grade!.note}', style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.grey[800])),
+                        Text('Note: ${session.grade!.note}',
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey[800])),
                       ],
                       const SizedBox(height: 8),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.edit, size: 16),
-                        label: Text(session.grade == null ? 'Add Grade' : 'Edit Grade'),
+                        label: Text(
+                            session.grade == null ? 'Add Grade' : 'Edit Grade'),
                         onPressed: () async {
                           final newGrade = await _showGradeDialog(session);
                           if (newGrade != null && mounted) {
@@ -295,25 +338,37 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
             }
 
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No students have joined this session yet.'));
+              return const Center(
+                  child: Text('No students have joined this session yet.'));
             }
 
             final sessions = snapshot.data!;
-            final presentCount = sessions.where((s) => s.attendanceChecked).length;
+            final presentCount =
+                sessions.where((s) => s.attendanceChecked).length;
             final gradedCount = sessions.where((s) => s.grade != null).length;
 
             return Column(
               children: [
                 Container(
                   padding: const EdgeInsets.all(16),
-                  color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceVariant
+                      .withOpacity(0.5),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildStatCard('Total', '${sessions.length}', Icons.people, Colors.blue),
-                      _buildStatCard('Present', '$presentCount', Icons.check_circle, Colors.green),
-                      _buildStatCard('Absent', '${sessions.length - presentCount}', Icons.abc, Colors.red),
-                      _buildStatCard('Graded', '$gradedCount', Icons.grade, Colors.purple),
+                      _buildStatCard('Total', '${sessions.length}',
+                          Icons.people, Colors.blue),
+                      _buildStatCard('Present', '$presentCount',
+                          Icons.check_circle, Colors.green),
+                      _buildStatCard(
+                          'Absent',
+                          '${sessions.length - presentCount}',
+                          Icons.abc,
+                          Colors.red),
+                      _buildStatCard(
+                          'Graded', '$gradedCount', Icons.grade, Colors.purple),
                     ],
                   ),
                 ),
@@ -334,13 +389,17 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+      String title, String value, IconData icon, Color color) {
     return Column(
       children: [
         Icon(icon, color: color, size: 24),
         const SizedBox(height: 4),
-        Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
-        Text(title, style: TextStyle(fontSize: 12, color: color.withOpacity(0.9))),
+        Text(value,
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: color)),
+        Text(title,
+            style: TextStyle(fontSize: 12, color: color.withOpacity(0.9))),
       ],
     );
   }

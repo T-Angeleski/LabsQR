@@ -70,6 +70,8 @@ public class StudentSessionServiceImpl implements StudentSessionService {
             throw new IllegalArgumentException("Session ID cannot be null");
 
         return Optional.of(studentSessionById);
+    }
+
     public StudentSessionDTO getStudentSessionByStudentId(UUID studentId) {
         if (studentId == null)
             throw new IllegalArgumentException("Student ID cannot be null");

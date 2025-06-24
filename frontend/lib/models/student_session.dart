@@ -11,7 +11,7 @@ class StudentSession {
   final String? studentName;
   final String? studentIndex;
   final User? student;
-  final Grade? grade;
+  late final Grade? grade;
 
   StudentSession({
     required this.id,
