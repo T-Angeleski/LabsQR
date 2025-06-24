@@ -7,6 +7,7 @@ import mk.ukim.finki.LabsProject.model.dto.StudentSessionDTO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface StudentSessionService {
@@ -15,4 +16,6 @@ public interface StudentSessionService {
     StudentSessionDTO getStudentSessionById(UUID studentSessionId);
 
     List<StudentSessionDTO> getStudentSessionsBySessionId(UUID sessionUuid);
+
+    Optional<StudentSession> findById(UUID studentSessionId);
 }
