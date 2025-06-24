@@ -28,6 +28,12 @@ public class SubjectController {
         return ResponseEntity.ok(subjects);
     }
 
+    @GetMapping("name/{name}")
+    public ResponseEntity<SubjectDTO> getSubjectByName(@PathVariable String name) {
+        SubjectDTO subjectDTO = subjectService.findByName(name);
+        return ResponseEntity.ok(subjectDTO);
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<SubjectDTO> createSubject(@RequestBody @Valid CreateSubjectDTO requestDTO) {
@@ -36,7 +42,7 @@ public class SubjectController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('PROFESSOR')")
+//    @PreAuthorize("hasRole('PROFESSOR')")
     public ResponseEntity<SubjectDTO> getSubjectById(@PathVariable UUID id) {
         SubjectDTO subject = subjectService.findById(id);
         return ResponseEntity.ok(subject);

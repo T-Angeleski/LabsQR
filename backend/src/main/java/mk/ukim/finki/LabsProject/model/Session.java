@@ -41,6 +41,10 @@ public class Session {
     @ManyToOne(fetch = FetchType.EAGER)
     private Subject subject;
 
+    @Lob
+    @Column(name = "qr_code")
+    private byte[] qrCode;
+
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(createdAt.plusMinutes(durationInMinutes));
     }

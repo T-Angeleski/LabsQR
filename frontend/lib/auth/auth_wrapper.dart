@@ -50,7 +50,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     }
 
     if (_isInSession) {
-      return const SessionDetailsScreen();
+      return const SessionDetailsScreen(subject: null,);
     } else if (_isLoggedIn) {
       return const HomePage();
     } else {

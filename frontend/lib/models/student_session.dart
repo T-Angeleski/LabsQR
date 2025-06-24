@@ -1,4 +1,3 @@
-import 'package:frontend/models/qrcode.dart';
 import 'package:frontend/models/user.dart';
 import 'grade.dart';
 
@@ -12,8 +11,7 @@ class StudentSession {
   final String? studentName;
   final String? studentIndex;
   final User? student;
-  final QRCode? qrCode;
-  late final Grade? grade;
+  final Grade? grade;
 
   StudentSession({
     required this.id,
@@ -25,7 +23,6 @@ class StudentSession {
     this.studentName,
     this.studentIndex,
     this.student,
-    this.qrCode,
     this.grade,
   });
 
@@ -50,7 +47,6 @@ class StudentSession {
       'studentName': studentName,
       'studentIndex': studentIndex,
       'student': student?.toJson(),
-      'qrCode': qrCode?.toJson(),
       'grade': grade?.toJson(),
     };
   }
@@ -66,7 +62,6 @@ class StudentSession {
       studentName: json['studentName'],
       studentIndex: json['studentIndex'],
       student: json['student'] != null ? User.fromJson(json['student']) : null,
-      qrCode: json['qrCode'] != null ? QRCode.fromJson(json['qrCode']) : null,
       grade: json['grade'] != null ? Grade.fromJson(json['grade']) : null,
     );
   }

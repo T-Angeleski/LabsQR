@@ -32,4 +32,10 @@ class StudentSessionService {
       },
     );
   }
+
+  Future<StudentSession> getStudentSessionByStudentId(String userId) async {
+    final response = await makeGetRequest('student-sessions/user/$userId');
+    return handleResponse<StudentSession>(
+        response, (data) => StudentSession.fromJson(data));
+  }
 }

@@ -7,7 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/sessionManager/session_manager.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://10.0.2.2:8080/auth';
+  // static const String baseUrl = 'http://10.0.2.2:8080/auth';
+  static const String baseUrl = 'http://192.168.100.139:8080/auth';
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final SharedPreferences _prefs;
   List<String>? userRoles;
