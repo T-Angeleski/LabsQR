@@ -80,6 +80,24 @@ public class StudentSessionServiceImpl implements StudentSessionService {
         return StudentSessionDTO.from(studentSession);
     }
 
+    @Override
+    public StudentSessionDTO finishedByStudentIdAndStudentSessionId(UUID studentId, UUID studentSessionId) {
+        if (studentId == null || studentSessionId == null) {
+            throw new IllegalArgumentException("Student ID and StudentSession ID cannot be null");
+        }
+
+        StudentSession studentSession = studentSessionRepository.findStudentSessionById(studentSessionId);
+
+        if (!(studentSession == studentSessionRepository.findByStudentId(studentId))) {
+            throw new IllegalArgumentException("StudentSession does not belong to the given student");
+        }
+
+        studentSession.setFinished(true);
+        studentSessionRepository.save(studentSession);
+
+        return StudentSessionDTO.from(studentSession);
+    }
+
     private StudentSession createStudentSession(User student, Session session) {
         // TODO: validations (already in session, is a student, etc)
         // TODO: check if the session is active

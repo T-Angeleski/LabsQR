@@ -38,4 +38,13 @@ class StudentSessionService {
     return handleResponse<StudentSession>(
         response, (data) => StudentSession.fromJson(data));
   }
+
+  Future<StudentSession> finishStudentSession(String userId, String studentSessionId) async {
+    final response = await makePostRequest(
+      'student-sessions/finish/$userId/$studentSessionId',
+      {},
+    );
+    return handleResponse<StudentSession>(
+      response, (data) => StudentSession.fromJson(data));
+  }
 }

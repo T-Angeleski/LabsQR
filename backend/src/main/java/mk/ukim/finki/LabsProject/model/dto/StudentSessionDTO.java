@@ -17,6 +17,7 @@ public class StudentSessionDTO {
     private UUID studentId;
     private LocalDateTime joinedAt;
     private boolean attendanceChecked;
+    private boolean isFinished;
     private String subjectName;
     private String studentName;
     private String studentIndex;
@@ -32,6 +33,7 @@ public class StudentSessionDTO {
         dto.setStudentId(studentSession.getStudent().getId());
         dto.setStudentName(studentSession.getStudent().getFullName());
         dto.setStudentIndex(studentSession.getStudent().getIndex());
+        dto.setFinished(studentSession.isFinished());
 
         if (studentSession.getGrade() != null) {
             dto.setGrade(GradeDTO.from(studentSession.getGrade()));

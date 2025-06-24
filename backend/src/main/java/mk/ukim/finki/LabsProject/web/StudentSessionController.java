@@ -40,5 +40,13 @@ public class StudentSessionController {
         return ResponseEntity.ok(dto);
     }
 
+    @PostMapping("/finish/{userId}/{studentSessionId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<StudentSessionDTO> finishSession(@PathVariable String userId, @PathVariable String studentSessionId) {
+        UUID userUuid = UUID.fromString(userId);
+        UUID studentSessionUuid = UUID.fromString(studentSessionId);
+        StudentSessionDTO dto = studentSessionService.finishedByStudentIdAndStudentSessionId(userUuid, studentSessionUuid);
+        return ResponseEntity.ok(dto);
+    }
 
 }

@@ -7,6 +7,7 @@ class StudentSession {
   final String studentId;
   final DateTime joinedAt;
   late final bool attendanceChecked;
+  late final bool? isFinished;
   final String? subjectName;
   final String? studentName;
   final String? studentIndex;
@@ -19,6 +20,7 @@ class StudentSession {
     required this.studentId,
     required this.joinedAt,
     required this.attendanceChecked,
+    this.isFinished,
     this.subjectName,
     this.studentName,
     this.studentIndex,
@@ -43,6 +45,7 @@ class StudentSession {
       'studentId': studentId,
       'joinedAt': joinedAt.toIso8601String(),
       'attendanceChecked': attendanceChecked,
+      'isFinished': isFinished,
       'subjectName': subjectName,
       'studentName': studentName,
       'studentIndex': studentIndex,
@@ -58,6 +61,7 @@ class StudentSession {
       studentId: json['studentId'] ?? '',
       joinedAt: DateTime.parse(json['joinedAt'] ?? '1970-01-01T00:00:00Z'),
       attendanceChecked: json['attendanceChecked'] ?? false,
+      isFinished: json['isFinished'] ?? false,
       subjectName: json['subjectName'],
       studentName: json['studentName'],
       studentIndex: json['studentIndex'],

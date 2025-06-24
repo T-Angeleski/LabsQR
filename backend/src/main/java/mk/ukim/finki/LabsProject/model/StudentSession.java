@@ -38,5 +38,8 @@ public class StudentSession {
     @JsonManagedReference
     @OneToOne(mappedBy = "studentSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private Grade grade;
+
+    @Column(name = "isFinished")
+    private boolean isFinished;
 }
 

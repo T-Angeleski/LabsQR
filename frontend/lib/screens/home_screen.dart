@@ -201,7 +201,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const SessionsScreen(),
+                                          const SessionsScreen(),
                                         ),
                                       ),
                                     ),
@@ -215,7 +215,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const CreateSessionScreen(),
+                                          const CreateSessionScreen(),
                                         ),
                                       ),
                                     ),
@@ -229,7 +229,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const SubjectsScreen(),
+                                          const SubjectsScreen(),
                                         ),
                                       ),
                                     ),
@@ -247,144 +247,199 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     _buildActionCard(
                                       title: 'Join Session',
                                       subtitle:
-                                          'Scan QR code to join a lab session',
+                                      'Scan QR code to join a lab session',
                                       icon: Icons.qr_code_scanner,
                                       color: Colors.orange,
-                                      // onTap: () => Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //     builder: (context) =>
-                                      //         const JoinSessionScreen(),
-                                      //   ),
-                                      // ),
                                       onTap: () async {
-                                        await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                QrScannerScreen(
-                                              onScanned: (sessionId) async {
-                                                try {
-                                                  final studentSessionService =
-                                                      Provider.of<
-                                                              StudentSessionService>(
-                                                          context,
-                                                          listen: false);
-                                                  final sessionService =
-                                                      Provider.of<
-                                                              SessionService>(
-                                                          context,
-                                                          listen: false);
-                                                  final authService =
-                                                      Provider.of<AuthService>(
-                                                          context,
-                                                          listen: false);
-                                                  final subjectService =
-                                                      Provider.of<
-                                                              SubjectService>(
-                                                          context,
-                                                          listen: false);
+                                        try {
+                                          final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
+                                          final authService = Provider.of<AuthService>(context, listen: false);
 
-                                                  await studentSessionService
-                                                      .joinSession(sessionId);
+                                          final userId = await authService.getCurrentUserIdAsync();
+                                          final joinedStudentSession = await studentSessionService.getStudentSessionByStudentId(userId);
+                                          //TODO: FIX THIS
+                                          print("JOINED STUDENT SESSION " + joinedStudentSession.isFinished.toString());
 
-                                                  final userId = await authService
-                                                      .getCurrentUserIdAsync();
-                                                  final joinedStudentSession =
-                                                      await studentSessionService
-                                                          .getStudentSessionByStudentId(
-                                                              userId);
-                                                  final joinedSession =
-                                                      await sessionService
-                                                          .getSessionById(
-                                                              joinedStudentSession
-                                                                  .sessionId);
-                                                  final subject =
-                                                      await subjectService
-                                                          .getSubjectById(
-                                                              joinedSession
-                                                                  .subjectId);
-
-                                                  Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          SessionDetailsScreen(
-                                                        subject: subject,
-                                                      ),
+                                          if (joinedStudentSession.isFinished == true) {
+                                            if (context.mounted) {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) => AlertDialog(
+                                                  title: const Text('Session Finished'),
+                                                  content: const Text('You have already finished your session.'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () => Navigator.of(context).pop(),
+                                                      child: const Text('OK'),
                                                     ),
-                                                  );
-                                                } catch (e) {
-                                                  if (mounted) {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      SnackBar(
-                                                          content: Text(
-                                                              'Failed to join session: $e')),
-                                                    );
-                                                  }
-                                                }
-                                              },
+                                                  ],
+                                                ),
+                                              );
+                                            }
+                                            return;
+                                          }
+                                        } catch (e) {
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text('Failed to check session status: $e')),
+                                            );
+                                          }
+                                        }
+                                        if (context.mounted) {
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  QrScannerScreen(
+                                                    onScanned: (
+                                                        sessionId) async {
+                                                      try {
+                                                        final studentSessionService =
+                                                        Provider.of<
+                                                            StudentSessionService>(
+                                                            context,
+                                                            listen: false);
+                                                        final sessionService =
+                                                        Provider.of<
+                                                            SessionService>(
+                                                            context,
+                                                            listen: false);
+                                                        final authService =
+                                                        Provider.of<
+                                                            AuthService>(
+                                                            context,
+                                                            listen: false);
+                                                        final subjectService =
+                                                        Provider.of<
+                                                            SubjectService>(
+                                                            context,
+                                                            listen: false);
+
+                                                        await studentSessionService
+                                                            .joinSession(
+                                                            sessionId);
+
+                                                        final userId = await authService
+                                                            .getCurrentUserIdAsync();
+                                                        final joinedStudentSession =
+                                                        await studentSessionService
+                                                            .getStudentSessionByStudentId(
+                                                            userId);
+
+                                                        final joinedSession =
+                                                        await sessionService
+                                                            .getSessionById(
+                                                            joinedStudentSession
+                                                                .sessionId);
+                                                        final subject =
+                                                        await subjectService
+                                                            .getSubjectById(
+                                                            joinedSession
+                                                                .subjectId);
+
+                                                        if (context.mounted) {
+                                                          Navigator
+                                                              .pushReplacement(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (
+                                                                  context) =>
+                                                                  SessionDetailsScreen(
+                                                                    subject: subject,
+                                                                  ),
+                                                            ),
+                                                          );
+                                                        }
+                                                      } catch (e) {
+                                                        if (mounted) {
+                                                          ScaffoldMessenger
+                                                              .of(
+                                                              context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                                content: Text(
+                                                                    'Failed to join session: $e')),
+                                                          );
+                                                        }
+                                                      }
+                                                    },
+                                                  ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       },
                                     ),
                                     const SizedBox(height: 16),
                                     _buildInfoCard(
                                       title: 'How to Join',
                                       subtitle:
-                                          'Tap "Join Session" and scan the QR code displayed by your professor',
+                                      'Tap "Join Session" and scan the QR code displayed by your professor',
                                       icon: Icons.info_outline,
                                       color: Colors.blue,
                                     ),
                                     _buildActionCard(
                                       title: 'Show Current Session',
                                       subtitle:
-                                          'View the session you have joined',
+                                      'View the session you have joined',
                                       icon: Icons.visibility,
                                       color: Colors.teal,
                                       onTap: () async {
                                         try {
                                           final studentSessionService = Provider
                                               .of<StudentSessionService>(
-                                                  context,
-                                                  listen: false);
+                                              context,
+                                              listen: false);
                                           final sessionService =
-                                              Provider.of<SessionService>(
-                                                  context,
-                                                  listen: false);
+                                          Provider.of<SessionService>(
+                                              context,
+                                              listen: false);
                                           final authService =
-                                              Provider.of<AuthService>(context,
-                                                  listen: false);
+                                          Provider.of<AuthService>(context,
+                                              listen: false);
                                           final subjectService =
-                                              Provider.of<SubjectService>(
-                                                  context,
-                                                  listen: false);
+                                          Provider.of<SubjectService>(
+                                              context,
+                                              listen: false);
 
                                           final userId = await authService
                                               .getCurrentUserIdAsync();
                                           final joinedStudentSession =
-                                              await studentSessionService
-                                                  .getStudentSessionByStudentId(
-                                                      userId);
-                                          final joinedSession =
-                                              await sessionService
-                                                  .getSessionById(
-                                                      joinedStudentSession
-                                                          .sessionId);
+                                          await studentSessionService
+                                              .getStudentSessionByStudentId(
+                                              userId);
+
+                                          if (joinedStudentSession.isFinished == true) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: const Text('Session Finished'),
+                                                content: const Text('You have already finished your session.'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () => Navigator.of(context).pop(),
+                                                    child: const Text('OK'),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                            return;
+                                          }
+
+                                          final joinedSession = await sessionService
+                                              .getSessionById(
+                                              joinedStudentSession
+                                                  .sessionId);
                                           final subject = await subjectService
                                               .getSubjectById(
-                                                  joinedSession.subjectId);
+                                              joinedSession.subjectId);
 
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   SessionDetailsScreen(
-                                                subject: subject,
-                                              ),
+                                                    subject: subject,
+                                                  ),
                                             ),
                                           );
                                         } catch (e) {

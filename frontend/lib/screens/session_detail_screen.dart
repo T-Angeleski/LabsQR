@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:frontend/auth/auth_service.dart';
+import 'package:frontend/service/student_session_service.dart';
 import 'package:frontend/sessionManager/session_manager.dart';
+import 'package:provider/provider.dart';
 
 import '../models/subject.dart';
 
@@ -61,7 +64,19 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
 
   Future<void> _endSession() async {
     _sessionTimer?.cancel();
+
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
+
+    final userId = await authService.getCurrentUserIdAsync();
+    final studentSession = await studentSessionService.getStudentSessionByStudentId(userId);
+
+    print("JOINED STUDENT SESSION " + studentSession.isFinished.toString());
+
+    await studentSessionService.finishStudentSession(userId, studentSession.id);
+
     await _sessionManager.endSession();
+
     if (mounted) {
       Navigator.of(context).pushReplacementNamed('/home');
     }
