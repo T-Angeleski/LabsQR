@@ -291,9 +291,7 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                         onPressed: () async {
                           final newGrade = await _showGradeDialog(session);
                           if (newGrade != null && mounted) {
-                            setState(() {
-                              session.grade = newGrade;
-                            });
+                            await _refreshData();
                           }
                         },
                       ),
