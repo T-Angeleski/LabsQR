@@ -7,13 +7,13 @@ class StudentSession {
   final String sessionId;
   final String studentId;
   final DateTime joinedAt;
-  final bool attendanceChecked;
+  late final bool attendanceChecked;
   final String? subjectName;
   final String? studentName;
   final String? studentIndex;
   final User? student;
   final QRCode? qrCode;
-  final Grade? grade;
+  late final Grade? grade;
 
   StudentSession({
     required this.id,

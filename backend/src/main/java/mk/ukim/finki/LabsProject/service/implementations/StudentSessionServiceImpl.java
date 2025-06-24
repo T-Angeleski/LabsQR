@@ -63,6 +63,15 @@ public class StudentSessionServiceImpl implements StudentSessionService {
         return StudentSessionDTO.from(sessions);
     }
 
+    @Override
+    public Optional<StudentSession> findById(UUID studentSessionId) {
+        StudentSession studentSessionById = studentSessionRepository.findStudentSessionById(studentSessionId);
+        if (studentSessionById == null)
+            throw new IllegalArgumentException("Session ID cannot be null");
+
+        return Optional.of(studentSessionById);
+    }
+
     private StudentSession createStudentSession(User student, Session session) {
         // TODO: validations (already in session, is a student, etc)
         // TODO: check if the session is active

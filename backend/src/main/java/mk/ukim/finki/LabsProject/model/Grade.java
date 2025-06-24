@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mk.ukim.finki.LabsProject.model.dto.StudentSessionDTO;
 
 import java.util.UUID;
 
@@ -35,4 +36,14 @@ public class Grade {
     @OneToOne
     private StudentSession studentSession;
 
+    public Grade(Integer points, Integer maxPoints, String note, StudentSession studentSession) {
+        this.points = points;
+        this.maxPoints = maxPoints;
+        this.note = note;
+        this.studentSession = studentSession;
+    }
+
+    public Grade(Integer points, Integer maxPoints, String note, StudentSessionDTO studentSession) {
+
+    }
 }
