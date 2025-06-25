@@ -13,8 +13,9 @@ import 'auth/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   final authService = await AuthService.create();
+  await authService.loadAuthState();
+
   await SessionManager().loadSessionState();
 
   runApp(

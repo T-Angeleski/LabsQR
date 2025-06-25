@@ -52,6 +52,7 @@ public class JwtServiceImpl implements JwtService {
 
 
             extraClaims.put("roles", roles);
+            extraClaims.put("fullName", user.getFullName());
 
         }
         return buildToken(extraClaims, userDetails, jwtExpiration);

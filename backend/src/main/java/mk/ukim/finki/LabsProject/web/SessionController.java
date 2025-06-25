@@ -16,7 +16,7 @@ import java.util.*;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/sessions")
+@RequestMapping("/api")
 @Tag(name = "Session Management")
 public class SessionController {
     private final SessionService sessionService;

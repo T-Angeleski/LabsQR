@@ -12,7 +12,7 @@ class SessionService {
       'teacherId': teacherId,
       'subjectId': subjectId,
     };
-    final response = await makePostRequest('sessions/create', sessionData);
+    final response = await makePostRequest('create', sessionData);
 
 
     if (response.statusCode != 200) {
@@ -21,14 +21,14 @@ class SessionService {
   }
 
   Future<Session> getSessionById(String sessionId) async {
-    final response = await makeGetRequest('sessions/$sessionId');
+    final response = await makeGetRequest(sessionId);
     return handleResponse<Session>(
         response, (data) => Session.fromJson(data));
   }
 
   Future<List<Session>> fetchSessions() async {
     final response = await makeGetRequest(
-        'sessions/sessions'); // TODO: remove double sessions once backend fixed
+        'sessions');
     return handleResponse<List<Session>>(
         response, (data) => parseListResponse(data, Session.fromJson));
   }

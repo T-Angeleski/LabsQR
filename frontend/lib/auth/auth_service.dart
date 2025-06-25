@@ -7,7 +7,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/sessionManager/session_manager.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://10.0.2.2:8080/auth';
+
+  // static const String baseUrl = 'http://10.0.2.2:8080/auth';
+
+  static const String baseUrl = 'http://localhost:8080/auth';
   // static const String baseUrl = 'http://192.168.100.139:8080/auth';
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final SharedPreferences _prefs;
@@ -22,6 +25,7 @@ class AuthService {
     final token = await authService.getToken();
     if (token != null && !JwtDecoder.isExpired(token)) {
       authService.userRoles = authService._parseRolesFromToken(token);
+      authService._initializeCachedName(token);
     }
 
     return authService;
@@ -95,6 +99,14 @@ class AuthService {
     userRoles = _parseRolesFromToken(token);
     await _secureStorage.write(key: _jwtTokenKey, value: token);
     await _prefs.setString(_userRolesKey, jsonEncode(userRoles));
+
+    try {
+      final decoded = JwtDecoder.decode(token);
+      _cachedFullName = decoded['fullName']?.toString();
+    } catch (e) {
+      _cachedFullName = null;
+    }
+
   }
 
   Future<String?> getToken() async {
@@ -107,6 +119,7 @@ class AuthService {
     await _prefs.remove(_inSessionKey);
     await _prefs.remove(_sessionDataKey);
     await SessionManager().endSession();
+    _cachedFullName = null;
     userRoles = null;
   }
 
@@ -169,6 +182,22 @@ class AuthService {
     final token = await getToken();
     if (token != null) {
       userRoles = _parseRolesFromToken(token);
+      _initializeCachedName(token);
     }
   }
+
+  String? _cachedFullName;
+
+
+  String? get userFullName => _cachedFullName;
+
+  void _initializeCachedName(String token) {
+    try {
+      final decoded = JwtDecoder.decode(token);
+      _cachedFullName = decoded['fullName']?.toString();
+    } catch (e) {
+      _cachedFullName = null;
+    }
+  }
+
 }

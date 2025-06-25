@@ -47,9 +47,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     final auth = Provider.of<AuthService>(context);
     final isProfessor = auth.userRoles?.contains('ROLE_PROFESSOR') ?? false;
     final isStudent = auth.userRoles?.contains('ROLE_STUDENT') ?? false;
-    final userName = auth.userEmail?.split('@')[0] ?? ' user';
-
-    print("User roles: ${auth.userRoles}");
+    final userName = auth.userFullName ?? 'Guest';
 
     return Scaffold(
       body: Container(
@@ -370,13 +368,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       },
                                     ),
                                     const SizedBox(height: 16),
-                                    _buildInfoCard(
-                                      title: 'How to Join',
-                                      subtitle:
-                                      'Tap "Join Session" and scan the QR code displayed by your professor',
-                                      icon: Icons.info_outline,
-                                      color: Colors.blue,
-                                    ),
+
                                     _buildActionCard(
                                       title: 'Show Current Session',
                                       subtitle:
