@@ -29,14 +29,24 @@ class _SessionsScreenState extends State<SessionsScreen> {
   }
 
   Color _getSessionStatusColor(Session session) {
-    if (session.isExpired) {
+    if (session.isExpired || _hasNoTimeLeft(session)) {
       return Colors.red;
     }
     return Colors.green;
   }
 
+  bool _hasNoTimeLeft(Session session) {
+    final created = session.createdAt;
+    final duration = Duration(minutes: session.durationInMinutes);
+    final now = DateTime.now();
+    final end = created.add(duration);
+    final timeLeft = end.difference(now);
+
+    return timeLeft.inMinutes <= 0;
+  }
+
   IconData _getSessionStatusIcon(Session session) {
-    if (session.isExpired) {
+    if (session.isExpired || _hasNoTimeLeft(session)) {
       return Icons.schedule;
     }
     return Icons.play_circle;
@@ -46,6 +56,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
     if (session.isExpired) {
       return 'Expired';
     }
+    if (_hasNoTimeLeft(session)) {
+      return 'Finished';
+    }
     return 'Active';
   }
 
@@ -53,7 +66,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
     final statusColor = _getSessionStatusColor(session);
     final statusIcon = _getSessionStatusIcon(session);
     final statusText = _getSessionStatusText(session);
-
+    final isExpiredOrNoTime = session.isExpired || _hasNoTimeLeft(session);
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 4,
@@ -160,16 +173,39 @@ class _SessionsScreenState extends State<SessionsScreen> {
               const SizedBox(height: 16),
               const Divider(height: 1),
               const SizedBox(height: 16),
-
-              // Session details
               Row(
                 children: [
                   Expanded(
                     child: _buildDetailItem(
                       Icons.timer,
-                      'Duration',
-                      '${session.durationInMinutes} min',
-                      Colors.blue,
+                      'Time Left',
+                      (() {
+                        final created = session.createdAt;
+                        final duration =
+                            Duration(minutes: session.durationInMinutes);
+                        final now = DateTime.now();
+                        final end = created.add(duration);
+                        final timeLeft = end.difference(now);
+                        final minutesLeft =
+                            timeLeft.inMinutes > 0 ? timeLeft.inMinutes : 0;
+
+                        if (minutesLeft == 0) {
+                          return 'Finished';
+                        }
+                        return '$minutesLeft min';
+                      })(),
+                      (() {
+                        final created = session.createdAt;
+                        final duration =
+                            Duration(minutes: session.durationInMinutes);
+                        final now = DateTime.now();
+                        final end = created.add(duration);
+                        final timeLeft = end.difference(now);
+
+                        return timeLeft.inMinutes <= 0
+                            ? Colors.red
+                            : Colors.blue;
+                      })(),
                     ),
                   ),
                   Expanded(
@@ -177,62 +213,61 @@ class _SessionsScreenState extends State<SessionsScreen> {
                       Icons.calendar_today,
                       'Created',
                       formatDate(session.createdAt),
-                      Colors.orange,
+                      isExpiredOrNoTime ? Colors.red : Colors.blue,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-
               // Session ID (shortened)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.fingerprint, size: 16, color: Colors.grey[600]),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Session ID: ',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        session.id.length > 8
-                            ? '${session.id.substring(0, 8)}...'
-                            : session.id,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[800],
-                          fontFamily: 'monospace',
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.copy, size: 16),
-                      onPressed: () {
-                        // Copy to clipboard functionality would go here
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Session ID copied to clipboard'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
-              ),
+              // Container(
+              //   width: double.infinity,
+              //   padding: const EdgeInsets.all(12),
+              //   decoration: BoxDecoration(
+              //     color: Colors.grey.withOpacity(0.1),
+              //     borderRadius: BorderRadius.circular(8),
+              //   ),
+              //   child: Row(
+              //     children: [
+              //       Icon(Icons.fingerprint, size: 16, color: Colors.grey[600]),
+              //       const SizedBox(width: 8),
+              //       Text(
+              //         'Session ID: ',
+              //         style: TextStyle(
+              //           fontSize: 12,
+              //           color: Colors.grey[600],
+              //           fontWeight: FontWeight.w500,
+              //         ),
+              //       ),
+              //       Expanded(
+              //         child: Text(
+              //           session.id.length > 8
+              //               ? '${session.id.substring(0, 8)}...'
+              //               : session.id,
+              //           style: TextStyle(
+              //             fontSize: 12,
+              //             color: Colors.grey[800],
+              //             fontFamily: 'monospace',
+              //           ),
+              //         ),
+              //       ),
+              //       IconButton(
+              //         icon: const Icon(Icons.copy, size: 16),
+              //         onPressed: () {
+              //           // Copy to clipboard functionality would go here
+              //           ScaffoldMessenger.of(context).showSnackBar(
+              //             const SnackBar(
+              //               content: Text('Session ID copied to clipboard'),
+              //               duration: Duration(seconds: 2),
+              //             ),
+              //           );
+              //         },
+              //         padding: EdgeInsets.zero,
+              //         constraints: const BoxConstraints(),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               const SizedBox(height: 12),
 
               // Action button
@@ -261,7 +296,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              if (!isExpiredOrNoTime)
+                const SizedBox(height: 8),
+              if (!isExpiredOrNoTime)
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(

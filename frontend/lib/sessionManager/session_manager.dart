@@ -18,23 +18,28 @@ class SessionManager {
   DateTime? get sessionEndTime => _sessionEndTime;
   Duration? get sessionDuration => _sessionDuration;
 
+  /// Load persisted state and automatically end expired sessions
   Future<void> loadSessionState() async {
     final sessionData = await _storage.read(key: _sessionKey);
     if (sessionData != null) {
-      final data = jsonDecode(sessionData);
-      _isInSession = data['isActive'] ?? false;
+      final data = jsonDecode(sessionData) as Map<String, dynamic>;
+      _isInSession = data['isActive'] == true;
+
       if (data['endTime'] != null) {
         _sessionEndTime = DateTime.parse(data['endTime']);
 
+        // If already past end time, clear session
         if (DateTime.now().isAfter(_sessionEndTime!)) {
           await endSession();
         } else {
+          // Calculate remaining duration
           _sessionDuration = _sessionEndTime!.difference(DateTime.now());
         }
       }
     }
   }
 
+  /// Start a session for the given duration
   Future<void> startSession(Duration duration) async {
     _isInSession = true;
     _sessionStartTime = DateTime.now();
@@ -52,6 +57,7 @@ class SessionManager {
     );
   }
 
+  /// End the current session and clear storage
   Future<void> endSession() async {
     _isInSession = false;
     _sessionStartTime = null;
@@ -60,6 +66,7 @@ class SessionManager {
     await _storage.delete(key: _sessionKey);
   }
 
+  /// Check if session is still active (and refresh state)
   Future<bool> checkSessionActive() async {
     await loadSessionState();
     if (_isInSession && _sessionEndTime != null) {
