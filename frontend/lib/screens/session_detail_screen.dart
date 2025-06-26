@@ -63,22 +63,41 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
   }
 
   Future<void> _endSession() async {
-    _sessionTimer?.cancel();
+    try {
+      _sessionTimer?.cancel();
 
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
 
-    final userId = await authService.getCurrentUserIdAsync();
-    final studentSession = await studentSessionService.getStudentSessionByStudentId(userId);
+      final userId = await authService.getCurrentUserIdAsync();
 
-    print("JOINED STUDENT SESSION " + studentSession.isFinished.toString());
+      final studentSession = await studentSessionService.getStudentSessionByStudentId(userId);
 
-    await studentSessionService.finishStudentSession(userId, studentSession.id);
+      if (studentSession == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No active session found')),
+          );
+        }
+        return;
+      }
 
-    await _sessionManager.endSession();
+      await studentSessionService.finishStudentSession(userId, studentSession.id);
 
-    if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/home');
+      debugPrint("Session finished: ${studentSession.id}");
+
+      await _sessionManager.endSession();
+
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+    } catch (e) {
+      debugPrint('Error ending session: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to end session: $e')),
+        );
+      }
     }
   }
 
@@ -202,7 +221,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Status indicator
                         AnimatedBuilder(
                           animation: _pulseAnimation,
                           builder: (context, child) {
@@ -228,7 +246,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                         ),
                         const SizedBox(height: 32),
 
-                        // Session active text
                         const Text(
                           'Session Active',
                           style: TextStyle(
@@ -240,7 +257,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Subject display
                             Container(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 8),
@@ -268,7 +284,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                         ),
                         const SizedBox(height: 16),
 
-                        // Timer display
                         if (_remainingTime != null) ...[
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -306,7 +321,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                           ),
                           const SizedBox(height: 24),
 
-                          // Warning message for low time
                           if (_remainingTime!.inMinutes <= 10)
                             Container(
                               padding: const EdgeInsets.all(12),
@@ -332,7 +346,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
 
                         const SizedBox(height: 48),
 
-                        // Instructions
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -365,7 +378,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                     ),
                   ),
 
-                  // End session button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(

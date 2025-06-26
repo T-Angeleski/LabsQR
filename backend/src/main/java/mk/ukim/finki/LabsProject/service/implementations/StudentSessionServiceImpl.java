@@ -6,6 +6,7 @@ import mk.ukim.finki.LabsProject.model.Session;
 import mk.ukim.finki.LabsProject.model.StudentSession;
 import mk.ukim.finki.LabsProject.model.User;
 import mk.ukim.finki.LabsProject.model.dto.StudentSessionDTO;
+import mk.ukim.finki.LabsProject.model.exceptions.StudentAlreadyInSessionException;
 import mk.ukim.finki.LabsProject.repository.SessionRepository;
 import mk.ukim.finki.LabsProject.repository.StudentSessionRepository;
 import mk.ukim.finki.LabsProject.repository.UserRepository;
@@ -35,7 +36,7 @@ public class StudentSessionServiceImpl implements StudentSessionService {
                 .orElseThrow(() -> new EntityNotFoundException("Session not found with ID: " + sessionId));
 
         if (studentSessionRepository.existsByStudentIdAndSessionId(studentId, sessionId)) {
-            throw new IllegalStateException("Student is already in this session");
+            throw new StudentAlreadyInSessionException("You are already in this session.");
         }
 
         StudentSession studentSession = createStudentSession(student, session);

@@ -37,6 +37,7 @@ void main() async {
         Provider<StudentSessionService>(
           create: (context) => StudentSessionService(),
         ),
+        Provider<SubjectService>(create: (_) => SubjectService()),
       ],
       child: const MyApp(),
     ),

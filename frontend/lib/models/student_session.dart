@@ -7,7 +7,7 @@ class StudentSession {
   final String studentId;
   final DateTime joinedAt;
   late final bool attendanceChecked;
-  late final bool? isFinished;
+  late final bool isFinished;
   final String? subjectName;
   final String? studentName;
   final String? studentIndex;
@@ -20,7 +20,7 @@ class StudentSession {
     required this.studentId,
     required this.joinedAt,
     required this.attendanceChecked,
-    this.isFinished,
+    required this.isFinished,
     this.subjectName,
     this.studentName,
     this.studentIndex,

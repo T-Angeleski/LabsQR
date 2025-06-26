@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/subject.dart';
 import 'package:frontend/screens/create_session_screen.dart';
 import 'package:frontend/screens/qr_scanner_screen.dart';
 import 'package:frontend/screens/session_detail_screen.dart';
@@ -67,7 +68,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             opacity: _fadeAnimation,
             child: Column(
               children: [
-                // Custom App Bar
                 Container(
                   padding: const EdgeInsets.all(20),
                   child: Row(
@@ -111,7 +111,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                 ),
 
-                // Main Content
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -128,7 +127,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         children: [
                           const SizedBox(height: 20),
 
-                          // Logo and Title Section
                           Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
@@ -175,7 +173,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                           const SizedBox(height: 40),
 
-                          // Action Buttons Section
                           Expanded(
                             child: SingleChildScrollView(
                               child: Column(
@@ -199,7 +196,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                          const SessionsScreen(),
+                                              const SessionsScreen(),
                                         ),
                                       ),
                                     ),
@@ -213,7 +210,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                          const CreateSessionScreen(),
+                                              const CreateSessionScreen(),
                                         ),
                                       ),
                                     ),
@@ -227,7 +224,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                          const SubjectsScreen(),
+                                              const SubjectsScreen(),
                                         ),
                                       ),
                                     ),
@@ -245,170 +242,57 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     _buildActionCard(
                                       title: 'Join Session',
                                       subtitle:
-                                      'Scan QR code to join a lab session',
+                                          'Scan QR code to join a lab session',
                                       icon: Icons.qr_code_scanner,
                                       color: Colors.orange,
-                                      onTap: () async {
-                                        try {
-                                          final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
-                                          final authService = Provider.of<AuthService>(context, listen: false);
-
-                                          final userId = await authService.getCurrentUserIdAsync();
-                                          final joinedStudentSession = await studentSessionService.getStudentSessionByStudentId(userId);
-                                          //TODO: FIX THIS
-                                          print("JOINED STUDENT SESSION " + joinedStudentSession.isFinished.toString());
-
-                                          if (joinedStudentSession.isFinished == true) {
-                                            if (context.mounted) {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) => AlertDialog(
-                                                  title: const Text('Session Finished'),
-                                                  content: const Text('You have already finished your session.'),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed: () => Navigator.of(context).pop(),
-                                                      child: const Text('OK'),
-                                                    ),
-                                                  ],
-                                                ),
-                                              );
-                                            }
-                                            return;
-                                          }
-                                        } catch (e) {
-                                          if (context.mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(content: Text('Failed to check session status: $e')),
-                                            );
-                                          }
-                                        }
-                                        if (context.mounted) {
-                                          await Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  QrScannerScreen(
-                                                    onScanned: (
-                                                        sessionId) async {
-                                                      try {
-                                                        final studentSessionService =
-                                                        Provider.of<
-                                                            StudentSessionService>(
-                                                            context,
-                                                            listen: false);
-                                                        final sessionService =
-                                                        Provider.of<
-                                                            SessionService>(
-                                                            context,
-                                                            listen: false);
-                                                        final authService =
-                                                        Provider.of<
-                                                            AuthService>(
-                                                            context,
-                                                            listen: false);
-                                                        final subjectService =
-                                                        Provider.of<
-                                                            SubjectService>(
-                                                            context,
-                                                            listen: false);
-
-                                                        await studentSessionService
-                                                            .joinSession(
-                                                            sessionId);
-
-                                                        final userId = await authService
-                                                            .getCurrentUserIdAsync();
-                                                        final joinedStudentSession =
-                                                        await studentSessionService
-                                                            .getStudentSessionByStudentId(
-                                                            userId);
-
-                                                        final joinedSession =
-                                                        await sessionService
-                                                            .getSessionById(
-                                                            joinedStudentSession
-                                                                .sessionId);
-                                                        final subject =
-                                                        await subjectService
-                                                            .getSubjectById(
-                                                            joinedSession
-                                                                .subjectId);
-
-                                                        if (context.mounted) {
-                                                          Navigator
-                                                              .pushReplacement(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (
-                                                                  context) =>
-                                                                  SessionDetailsScreen(
-                                                                    subject: subject,
-                                                                  ),
-                                                            ),
-                                                          );
-                                                        }
-                                                      } catch (e) {
-                                                        if (mounted) {
-                                                          ScaffoldMessenger
-                                                              .of(
-                                                              context)
-                                                              .showSnackBar(
-                                                            SnackBar(
-                                                                content: Text(
-                                                                    'Failed to join session: $e')),
-                                                          );
-                                                        }
-                                                      }
-                                                    },
-                                                  ),
-                                            ),
-                                          );
-                                        }
-                                      },
+                                      onTap: () => _handleJoinSession(context),
                                     ),
                                     const SizedBox(height: 16),
-
                                     _buildActionCard(
                                       title: 'Show Current Session',
                                       subtitle:
-                                      'View the session you have joined',
+                                          'View the session you have joined',
                                       icon: Icons.visibility,
                                       color: Colors.teal,
                                       onTap: () async {
                                         try {
                                           final studentSessionService = Provider
                                               .of<StudentSessionService>(
-                                              context,
-                                              listen: false);
+                                                  context,
+                                                  listen: false);
                                           final sessionService =
-                                          Provider.of<SessionService>(
-                                              context,
-                                              listen: false);
+                                              Provider.of<SessionService>(
+                                                  context,
+                                                  listen: false);
                                           final authService =
-                                          Provider.of<AuthService>(context,
-                                              listen: false);
+                                              Provider.of<AuthService>(context,
+                                                  listen: false);
                                           final subjectService =
-                                          Provider.of<SubjectService>(
-                                              context,
-                                              listen: false);
+                                              Provider.of<SubjectService>(
+                                                  context,
+                                                  listen: false);
 
                                           final userId = await authService
                                               .getCurrentUserIdAsync();
                                           final joinedStudentSession =
-                                          await studentSessionService
-                                              .getStudentSessionByStudentId(
-                                              userId);
+                                              await studentSessionService
+                                                  .getStudentSessionByStudentId(
+                                                      userId);
 
-                                          if (joinedStudentSession.isFinished == true) {
+                                          if (joinedStudentSession.isFinished ==
+                                              true) {
                                             showDialog(
                                               context: context,
                                               builder: (context) => AlertDialog(
-                                                title: const Text('Session Finished'),
-                                                content: const Text('You have already finished your session.'),
+                                                title: const Text(
+                                                    'Session Finished'),
+                                                content: const Text(
+                                                    'You have already finished your session.'),
                                                 actions: [
                                                   TextButton(
-                                                    onPressed: () => Navigator.of(context).pop(),
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(),
                                                     child: const Text('OK'),
                                                   ),
                                                 ],
@@ -417,21 +301,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             return;
                                           }
 
-                                          final joinedSession = await sessionService
-                                              .getSessionById(
-                                              joinedStudentSession
-                                                  .sessionId);
+                                          final joinedSession =
+                                              await sessionService
+                                                  .getSessionById(
+                                                      joinedStudentSession
+                                                          .sessionId);
                                           final subject = await subjectService
                                               .getSubjectById(
-                                              joinedSession.subjectId);
+                                                  joinedSession.subjectId);
 
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   SessionDetailsScreen(
-                                                    subject: subject,
-                                                  ),
+                                                subject: subject,
+                                              ),
                                             ),
                                           );
                                         } catch (e) {
@@ -598,4 +483,78 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
     );
   }
+}
+
+Future<void> _handleJoinSession(BuildContext context) async {
+  try {
+    final hasActiveSession = await _hasActiveStudentSession(context);
+
+    if (hasActiveSession) {
+      if (context.mounted) {
+        _showActiveSessionDialog(context);
+      }
+      return;
+    }
+
+    if (context.mounted) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const QrScannerScreen()),
+      );
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error checking sessions: $e')),
+      );
+    }
+  }
+}
+
+Future<bool> _hasActiveStudentSession(BuildContext context) async {
+  try {
+    final studentSessionService =
+        Provider.of<StudentSessionService>(context, listen: false);
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    final userId = await authService.getCurrentUserIdAsync();
+    final session =
+        await studentSessionService.getStudentSessionByStudentId(userId);
+
+    return !session.isFinished;
+  } catch (e) {
+    debugPrint('Error checking active session: $e');
+    return false;
+  }
+}
+
+void _showActiveSessionDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Active Session Found'),
+      content: const Text(
+          'You already have an active session. Please end it before joining a new one.'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('OK'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SessionDetailsScreen(
+                  subject: new Subject(id: "id", name: "testing"),
+                ),
+              ),
+            );
+          },
+          child: const Text('View Session'),
+        ),
+      ],
+    ),
+  );
 }

@@ -3,6 +3,7 @@ package mk.ukim.finki.LabsProject.config;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import mk.ukim.finki.LabsProject.model.dto.ApiError;
+import mk.ukim.finki.LabsProject.model.exceptions.StudentAlreadyInSessionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -111,18 +112,30 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAllUncaughtExceptions(
             Exception ex,
             HttpServletRequest request) {
 
+
+        ex.printStackTrace();
+
         ApiError apiError = ApiError.of(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
-                "An unexpected error occurred",
+                "An unexpected error occurred: " + ex.getMessage(),
                 request.getRequestURI()
         );
 
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
+    @ExceptionHandler(StudentAlreadyInSessionException.class)
+    public ResponseEntity<String> handleStudentAlreadyInSessionException(StudentAlreadyInSessionException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+
 }
