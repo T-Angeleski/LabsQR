@@ -3,6 +3,7 @@ package mk.ukim.finki.LabsProject.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -45,6 +46,7 @@ public class Session {
     @Column(name = "qr_code")
     private byte[] qrCode;
 
+    @JsonProperty("isExpired")
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(createdAt.plusMinutes(durationInMinutes));
     }

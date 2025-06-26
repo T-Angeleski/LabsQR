@@ -2,6 +2,7 @@ package mk.ukim.finki.LabsProject.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,7 +40,7 @@ public class StudentSession {
     @OneToOne(mappedBy = "studentSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private Grade grade;
 
-    @Column(name = "isFinished")
+    @JsonProperty("isFinished")
     private boolean isFinished;
 }
 
