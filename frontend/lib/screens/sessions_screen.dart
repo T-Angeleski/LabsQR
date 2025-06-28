@@ -67,12 +67,18 @@ class _SessionsScreenState extends State<SessionsScreen> {
     final statusIcon = _getSessionStatusIcon(session);
     final statusText = _getSessionStatusText(session);
     final isExpiredOrNoTime = session.isExpired || _hasNoTimeLeft(session);
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 4,
+      elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: Colors.blue.withOpacity(0.1),
+          width: 1,
+        ),
       ),
+      color: Colors.white,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
@@ -87,36 +93,36 @@ class _SessionsScreenState extends State<SessionsScreen> {
         },
         child: Container(
           padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                statusColor.withOpacity(0.05),
-                Colors.white,
-              ],
-            ),
-          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with subject and status
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    width: 48,
+                    height: 48,
                     decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.1),
-                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.blue.withOpacity(0.1),
+                          Colors.blue.withOpacity(0.05),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.blue.withOpacity(0.2),
+                        width: 1,
+                      ),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.school,
-                      color: statusColor,
-                      size: 20,
+                      color: Colors.blue,
+                      size: 24,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,10 +131,11 @@ class _SessionsScreenState extends State<SessionsScreen> {
                           session.subjectName,
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                             color: Colors.black87,
                           ),
                         ),
+                        const SizedBox(height: 4),
                         Text(
                           'by ${session.teacherName}',
                           style: TextStyle(
@@ -139,7 +146,6 @@ class _SessionsScreenState extends State<SessionsScreen> {
                       ],
                     ),
                   ),
-                  // Status badge
                   Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -171,7 +177,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              const Divider(height: 1),
+              Divider(
+                height: 1,
+                color: Colors.grey[300],
+              ),
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -204,7 +213,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
                         return timeLeft.inMinutes <= 0
                             ? Colors.red
-                            : Colors.blue;
+                            : statusColor;
                       })(),
                     ),
                   ),
@@ -213,116 +222,66 @@ class _SessionsScreenState extends State<SessionsScreen> {
                       Icons.calendar_today,
                       'Created',
                       formatDate(session.createdAt),
-                      isExpiredOrNoTime ? Colors.red : Colors.blue,
+                      Colors.blue,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              // Session ID (shortened)
-              // Container(
-              //   width: double.infinity,
-              //   padding: const EdgeInsets.all(12),
-              //   decoration: BoxDecoration(
-              //     color: Colors.grey.withOpacity(0.1),
-              //     borderRadius: BorderRadius.circular(8),
-              //   ),
-              //   child: Row(
-              //     children: [
-              //       Icon(Icons.fingerprint, size: 16, color: Colors.grey[600]),
-              //       const SizedBox(width: 8),
-              //       Text(
-              //         'Session ID: ',
-              //         style: TextStyle(
-              //           fontSize: 12,
-              //           color: Colors.grey[600],
-              //           fontWeight: FontWeight.w500,
-              //         ),
-              //       ),
-              //       Expanded(
-              //         child: Text(
-              //           session.id.length > 8
-              //               ? '${session.id.substring(0, 8)}...'
-              //               : session.id,
-              //           style: TextStyle(
-              //             fontSize: 12,
-              //             color: Colors.grey[800],
-              //             fontFamily: 'monospace',
-              //           ),
-              //         ),
-              //       ),
-              //       IconButton(
-              //         icon: const Icon(Icons.copy, size: 16),
-              //         onPressed: () {
-              //           // Copy to clipboard functionality would go here
-              //           ScaffoldMessenger.of(context).showSnackBar(
-              //             const SnackBar(
-              //               content: Text('Session ID copied to clipboard'),
-              //               duration: Duration(seconds: 2),
-              //             ),
-              //           );
-              //         },
-              //         padding: EdgeInsets.zero,
-              //         constraints: const BoxConstraints(),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              const SizedBox(height: 12),
-
-              // Action button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => StudentSessionsScreen(
-                          sessionId: session.id,
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => StudentSessionsScreen(
+                              sessionId: session.id,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.people, size: 18),
+                      label: const Text('View Students'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                    );
-                  },
-                  icon: const Icon(Icons.people),
-                  label: const Text('View Students'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: statusColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                ),
-              ),
-              if (!isExpiredOrNoTime)
-                const SizedBox(height: 8),
-              if (!isExpiredOrNoTime)
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ShowQrCodeScreen(
-                          qrCodeBytes: session.qrCode,
+                  if (!isExpiredOrNoTime) ...[
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ShowQrCodeScreen(
+                                qrCodeBytes: session.qrCode,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.qr_code, size: 18),
+                        label: const Text('QR Code'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black87,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
-                    );
-                  },
-                  icon: const Icon(Icons.qr_code),
-                  label: const Text('Show QR Code'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ),
-                ),
+                  ],
+                ],
               ),
             ],
           ),
@@ -363,8 +322,6 @@ class _SessionsScreenState extends State<SessionsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sessions'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -379,7 +336,7 @@ class _SessionsScreenState extends State<SessionsScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).colorScheme.inversePrimary.withOpacity(0.1),
+              Colors.black.withOpacity(0.02),
               Colors.white,
             ],
           ),
@@ -392,7 +349,9 @@ class _SessionsScreenState extends State<SessionsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(),
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    ),
                     SizedBox(height: 16),
                     Text(
                       'Loading sessions...',
@@ -410,25 +369,35 @@ class _SessionsScreenState extends State<SessionsScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline,
-                          color: Colors.red, size: 64),
+                      Icon(
+                        Icons.error_outline,
+                        color: Colors.grey[400],
+                        size: 64,
+                      ),
                       const SizedBox(height: 16),
                       const Text(
                         'Failed to load sessions',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         '${snapshot.error}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.grey),
+                        style: TextStyle(color: Colors.grey[600]),
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton.icon(
                         onPressed: _refreshSessions,
                         icon: const Icon(Icons.refresh),
                         label: const Text('Try Again'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -437,24 +406,28 @@ class _SessionsScreenState extends State<SessionsScreen> {
             }
 
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(
+              return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.event_note, size: 80, color: Colors.grey),
-                    SizedBox(height: 16),
+                    Icon(
+                      Icons.event_note,
+                      size: 80,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
                     Text(
                       'No sessions found',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey,
+                        color: Colors.grey[600],
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       'Sessions will appear here once they are created',
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: Colors.grey[500]),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -463,24 +436,29 @@ class _SessionsScreenState extends State<SessionsScreen> {
             }
 
             final sessions = snapshot.data!;
-            final activeSessions = sessions.where((s) => !s.isExpired).length;
+            final activeSessions = sessions
+                .where((s) => !s.isExpired && !_hasNoTimeLeft(s))
+                .length;
             final expiredSessions = sessions.length - activeSessions;
 
             return Column(
               children: [
-                // Stats header
                 if (sessions.isNotEmpty)
                   Container(
                     margin: const EdgeInsets.all(16),
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.blue.withOpacity(0.1),
+                        width: 1,
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
+                          color: Colors.black.withOpacity(0.05),
                           spreadRadius: 1,
-                          blurRadius: 8,
+                          blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
                       ],
@@ -516,11 +494,10 @@ class _SessionsScreenState extends State<SessionsScreen> {
                       ],
                     ),
                   ),
-
-                // Sessions list
                 Expanded(
                   child: RefreshIndicator(
                     onRefresh: () async => _refreshSessions(),
+                    color: Colors.blue,
                     child: ListView.builder(
                       padding: const EdgeInsets.only(bottom: 16),
                       itemCount: sessions.length,
@@ -546,7 +523,11 @@ class _SessionsScreenState extends State<SessionsScreen> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: color.withOpacity(0.1),
-            shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: color.withOpacity(0.2),
+              width: 1,
+            ),
           ),
           child: Icon(icon, color: color, size: 24),
         ),

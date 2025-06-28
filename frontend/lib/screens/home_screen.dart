@@ -8,9 +8,7 @@ import 'package:provider/provider.dart';
 
 import 'package:frontend/auth/auth_service.dart';
 import 'package:frontend/auth/auth_wrapper.dart';
-import '../service/session_service.dart';
-import '../service/student_session_service.dart';
-import '../service/subject_service.dart';
+import 'package:frontend/service/student_session_service.dart';
 import 'create_subjects_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -57,8 +55,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).primaryColor.withOpacity(0.8),
-              Theme.of(context).primaryColor.withOpacity(0.6),
+              Colors.black.withOpacity(0.9),
+              Colors.black.withOpacity(0.7),
               Colors.white,
             ],
           ),
@@ -110,7 +108,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -126,7 +123,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       child: Column(
                         children: [
                           const SizedBox(height: 20),
-
                           Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
@@ -170,22 +166,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               ],
                             ),
                           ),
-
                           const SizedBox(height: 40),
-
                           Expanded(
                             child: SingleChildScrollView(
                               child: Column(
                                 children: [
                                   if (isProfessor) ...[
-                                    Text(
-                                      'Professor Dashboard',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey[800],
-                                      ),
-                                    ),
                                     const SizedBox(height: 20),
                                     _buildActionCard(
                                       title: 'View Sessions',
@@ -205,7 +191,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       title: 'Create Session',
                                       subtitle: 'Start a new lab session',
                                       icon: Icons.add_circle,
-                                      color: Colors.green,
+                                      color: Colors.blue,
                                       onTap: () => Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -219,7 +205,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       title: 'Manage Subjects',
                                       subtitle: 'Add or edit your subjects',
                                       icon: Icons.school,
-                                      color: Colors.purple,
+                                      color: Colors.blue,
                                       onTap: () => Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -230,104 +216,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     ),
                                   ],
                                   if (isStudent) ...[
-                                    Text(
-                                      'Student Portal',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey[800],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20),
+                                    const SizedBox(height: 24),
                                     _buildActionCard(
                                       title: 'Join Session',
                                       subtitle:
                                           'Scan QR code to join a lab session',
                                       icon: Icons.qr_code_scanner,
-                                      color: Colors.orange,
+                                      color: Colors.blue,
                                       onTap: () => _handleJoinSession(context),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    _buildActionCard(
-                                      title: 'Show Current Session',
-                                      subtitle:
-                                          'View the session you have joined',
-                                      icon: Icons.visibility,
-                                      color: Colors.teal,
-                                      onTap: () async {
-                                        try {
-                                          final studentSessionService = Provider
-                                              .of<StudentSessionService>(
-                                                  context,
-                                                  listen: false);
-                                          final sessionService =
-                                              Provider.of<SessionService>(
-                                                  context,
-                                                  listen: false);
-                                          final authService =
-                                              Provider.of<AuthService>(context,
-                                                  listen: false);
-                                          final subjectService =
-                                              Provider.of<SubjectService>(
-                                                  context,
-                                                  listen: false);
-
-                                          final userId = await authService
-                                              .getCurrentUserIdAsync();
-                                          final joinedStudentSession =
-                                              await studentSessionService
-                                                  .getStudentSessionByStudentId(
-                                                      userId);
-
-                                          if (joinedStudentSession.isFinished ==
-                                              true) {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => AlertDialog(
-                                                title: const Text(
-                                                    'Session Finished'),
-                                                content: const Text(
-                                                    'You have already finished your session.'),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () =>
-                                                        Navigator.of(context)
-                                                            .pop(),
-                                                    child: const Text('OK'),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                            return;
-                                          }
-
-                                          final joinedSession =
-                                              await sessionService
-                                                  .getSessionById(
-                                                      joinedStudentSession
-                                                          .sessionId);
-                                          final subject = await subjectService
-                                              .getSubjectById(
-                                                  joinedSession.subjectId);
-
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  SessionDetailsScreen(
-                                                subject: subject,
-                                              ),
-                                            ),
-                                          );
-                                        } catch (e) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'No active session found or failed to load: $e')),
-                                          );
-                                        }
-                                      },
                                     ),
                                   ],
                                   const SizedBox(height: 40),
@@ -423,66 +319,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
     );
   }
-
-  Widget _buildInfoCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-  }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: color.withOpacity(0.05),
-          border: Border.all(color: color.withOpacity(0.2)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 Future<void> _handleJoinSession(BuildContext context) async {
@@ -547,7 +383,7 @@ void _showActiveSessionDialog(BuildContext context) {
               context,
               MaterialPageRoute(
                 builder: (context) => SessionDetailsScreen(
-                  subject: new Subject(id: "id", name: "testing"),
+                  subject: Subject(id: "id", name: "testing"),
                 ),
               ),
             );

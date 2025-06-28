@@ -67,11 +67,13 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
       _sessionTimer?.cancel();
 
       final authService = Provider.of<AuthService>(context, listen: false);
-      final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
+      final studentSessionService =
+          Provider.of<StudentSessionService>(context, listen: false);
 
       final userId = await authService.getCurrentUserIdAsync();
 
-      final studentSession = await studentSessionService.getStudentSessionByStudentId(userId);
+      final studentSession =
+          await studentSessionService.getStudentSessionByStudentId(userId);
 
       if (studentSession == null) {
         if (mounted) {
@@ -82,7 +84,8 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
         return;
       }
 
-      await studentSessionService.finishStudentSession(userId, studentSession.id);
+      await studentSessionService.finishStudentSession(
+          userId, studentSession.id);
 
       debugPrint("Session finished: ${studentSession.id}");
 
@@ -177,8 +180,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
         appBar: AppBar(
           title: const Text('Active Session'),
           automaticallyImplyLeading: false,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          elevation: 0,
           actions: [
             IconButton(
               icon: const Icon(Icons.info_outline),
@@ -245,7 +246,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                           },
                         ),
                         const SizedBox(height: 32),
-
                         const Text(
                           'Session Active',
                           style: TextStyle(
@@ -283,7 +283,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                           ],
                         ),
                         const SizedBox(height: 16),
-
                         if (_remainingTime != null) ...[
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -320,7 +319,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                             ),
                           ),
                           const SizedBox(height: 24),
-
                           if (_remainingTime!.inMinutes <= 10)
                             Container(
                               padding: const EdgeInsets.all(12),
@@ -343,9 +341,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                               ),
                             ),
                         ],
-
                         const SizedBox(height: 48),
-
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -377,7 +373,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
                       ],
                     ),
                   ),
-
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(

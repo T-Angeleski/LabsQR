@@ -11,8 +11,6 @@ class ShowQrCodeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Session QR Code'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        elevation: 0,
       ),
       body: Container(
         width: double.infinity,

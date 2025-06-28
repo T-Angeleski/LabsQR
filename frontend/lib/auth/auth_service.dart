@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/sessionManager/session_manager.dart';
 
 class AuthService {
-
   // static const String baseUrl = 'http://10.0.2.2:8080/auth';
 
   static const String baseUrl = 'http://localhost:8080/auth';
@@ -106,7 +105,6 @@ class AuthService {
     } catch (e) {
       _cachedFullName = null;
     }
-
   }
 
   Future<String?> getToken() async {
@@ -188,7 +186,6 @@ class AuthService {
 
   String? _cachedFullName;
 
-
   String? get userFullName => _cachedFullName;
 
   void _initializeCachedName(String token) {
@@ -199,5 +196,4 @@ class AuthService {
       _cachedFullName = null;
     }
   }
-
 }
