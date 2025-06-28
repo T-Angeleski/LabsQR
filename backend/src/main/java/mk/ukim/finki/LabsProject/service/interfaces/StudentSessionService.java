@@ -1,12 +1,9 @@
 package mk.ukim.finki.LabsProject.service.interfaces;
 
-import mk.ukim.finki.LabsProject.model.Session;
 import mk.ukim.finki.LabsProject.model.StudentSession;
-import mk.ukim.finki.LabsProject.model.User;
 import mk.ukim.finki.LabsProject.model.dto.StudentSessionDTO;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,4 +17,5 @@ public interface StudentSessionService {
     Optional<StudentSession> findById(UUID studentSessionId);
     StudentSessionDTO getStudentSessionByStudentId(UUID studentId);
     StudentSessionDTO finishedByStudentIdAndStudentSessionId(UUID studentId, UUID studentSessionId);
+    StudentSessionDTO markAttendance(UUID studentId, UUID sessionId);
 }
