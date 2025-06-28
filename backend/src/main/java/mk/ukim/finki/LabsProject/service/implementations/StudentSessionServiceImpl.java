@@ -44,18 +44,6 @@ public class StudentSessionServiceImpl implements StudentSessionService {
     }
 
     @Override
-    public StudentSessionDTO getStudentSessionById(UUID studentSessionId) {
-        if (studentSessionId == null) {
-            throw new IllegalArgumentException("StudentSession ID cannot be null");
-        }
-
-        StudentSession studentSession = studentSessionRepository.findById(studentSessionId)
-                .orElseThrow(() -> new EntityNotFoundException("StudentSession with ID " + studentSessionId + " not found"));
-
-        return StudentSessionDTO.from(studentSession);
-    }
-
-    @Override
     public List<StudentSessionDTO> getStudentSessionsBySessionId(UUID sessionUuid) {
         if (sessionUuid == null)
             throw new IllegalArgumentException("Session ID cannot be null");
@@ -66,11 +54,13 @@ public class StudentSessionServiceImpl implements StudentSessionService {
 
     @Override
     public Optional<StudentSession> findById(UUID studentSessionId) {
-        StudentSession studentSessionById = studentSessionRepository.findStudentSessionById(studentSessionId);
-        if (studentSessionById == null)
+        StudentSession studentSession = studentSessionRepository.findById(studentSessionId)
+                .orElseThrow(() -> new EntityNotFoundException("StudentSession with ID " + studentSessionId + " not found"));
+
+        if (studentSession == null)
             throw new IllegalArgumentException("Session ID cannot be null");
 
-        return Optional.of(studentSessionById);
+        return Optional.of(studentSession);
     }
 
     public StudentSessionDTO getStudentSessionByStudentId(UUID studentId) {
@@ -82,16 +72,13 @@ public class StudentSessionServiceImpl implements StudentSessionService {
     }
 
     @Override
-    public StudentSessionDTO finishedByStudentIdAndStudentSessionId(UUID studentId, UUID studentSessionId) {
+    public StudentSessionDTO finishSession(UUID studentId, UUID studentSessionId) {
         if (studentId == null || studentSessionId == null) {
             throw new IllegalArgumentException("Student ID and StudentSession ID cannot be null");
         }
 
-        StudentSession studentSession = studentSessionRepository.findStudentSessionById(studentSessionId);
-
-        if (!(studentSession == studentSessionRepository.findByStudentId(studentId))) {
-            throw new IllegalArgumentException("StudentSession does not belong to the given student");
-        }
+        StudentSession studentSession = studentSessionRepository.findByStudentIdAndId(studentId, studentSessionId)
+                .orElseThrow(() -> new EntityNotFoundException("StudentSession not found for given student and session"));
 
         studentSession.setFinished(true);
         studentSessionRepository.save(studentSession);
@@ -100,12 +87,12 @@ public class StudentSessionServiceImpl implements StudentSessionService {
     }
 
     @Override
-    public StudentSessionDTO markAttendance(UUID studentId, UUID sessionId) {
-        if (studentId == null || sessionId == null) {
+    public StudentSessionDTO markAttendance(UUID studentId, UUID studentSessionId) {
+        if (studentId == null || studentSessionId == null) {
             throw new IllegalArgumentException("Student ID and Session ID cannot be null");
         }
 
-        StudentSession studentSession = studentSessionRepository.findByStudentIdAndSessionId(studentId, sessionId)
+        StudentSession studentSession = studentSessionRepository.findByStudentIdAndId(studentId, studentSessionId)
                 .orElseThrow(() -> new EntityNotFoundException("StudentSession not found for given student and session"));
 
         studentSession.setAttendanceChecked(true);

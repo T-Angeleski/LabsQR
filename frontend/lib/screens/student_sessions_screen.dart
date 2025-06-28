@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/auth/auth_service.dart';
 import 'package:frontend/models/student_session.dart';
 import 'package:frontend/service/student_session_service.dart';
 import 'package:frontend/util/date_util.dart';
@@ -194,17 +195,26 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
   }
 
   Future<void> _toggleAttendance(StudentSession session) async {
-    // TODO: Implement API call
-    setState(() {
-      session.attendanceChecked = !session.attendanceChecked;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-            '${session.displayName} marked as ${session.attendanceChecked ? 'Present' : 'Absent'}'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    try {
+      if (session.attendanceChecked) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Attendance already marked'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+        return;
+      }
+      await _studentSessionService.markAttendance(session.studentId, session.id);
+      await _refreshData();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Attendance has already been updated for ${session.studentIndex}'),
+          backgroundColor: Colors.blue,
+        ),
+      );
+    }
   }
 
   Widget _buildGradeChip(Grade? grade) {
@@ -343,6 +353,7 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
             final presentCount =
                 sessions.where((s) => s.attendanceChecked).length;
             final gradedCount = sessions.where((s) => s.grade != null).length;
+            final finishedCount = sessions.where((s) => s.isFinished).length;
 
             return Column(
               children: [
@@ -360,12 +371,13 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                       _buildStatCard('Present', '$presentCount',
                           Icons.check_circle, Colors.green),
                       _buildStatCard(
-                          'Absent',
-                          '${sessions.length - presentCount}',
-                          Icons.abc,
-                          Colors.red),
+                          'Absent', '${sessions.length - presentCount}',
+                          Icons.access_time_filled_outlined, Colors.red),
+                      _buildStatCard('Finished', '$finishedCount',
+                          Icons.flag, Colors.teal),
                       _buildStatCard(
-                          'Graded', '$gradedCount', Icons.grade, Colors.purple),
+                          'Graded', '$gradedCount',
+                          Icons.grade, Colors.purple),
                     ],
                   ),
                 ),

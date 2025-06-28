@@ -4,6 +4,7 @@ import 'package:frontend/screens/create_session_screen.dart';
 import 'package:frontend/screens/qr_scanner_screen.dart';
 import 'package:frontend/screens/session_detail_screen.dart';
 import 'package:frontend/screens/sessions_screen.dart';
+import 'package:frontend/service/session_service.dart';
 import 'package:provider/provider.dart';
 
 import 'package:frontend/auth/auth_service.dart';
@@ -323,9 +324,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
 Future<void> _handleJoinSession(BuildContext context) async {
   try {
-    final hasActiveSession = await _hasActiveStudentSession(context);
+    final studentSessionService =
+    Provider.of<StudentSessionService>(context, listen: false);
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final sessionService = Provider.of<SessionService>(context, listen: false);
 
-    if (hasActiveSession) {
+    final userId = await authService.getCurrentUserIdAsync();
+    final studentSession = await studentSessionService.getStudentSessionByStudentId(userId);
+    final session = await sessionService.getSessionById(studentSession.sessionId);
+    final created = session.createdAt;
+    final duration = Duration(minutes: session.durationInMinutes);
+    final now = DateTime.now();
+    final end = created.add(duration);
+    final timeLeft = end.difference(now);
+
+    if (timeLeft.inMinutes > 0) {
       if (context.mounted) {
         _showActiveSessionDialog(context);
       }
@@ -347,24 +360,36 @@ Future<void> _handleJoinSession(BuildContext context) async {
   }
 }
 
-Future<bool> _hasActiveStudentSession(BuildContext context) async {
+void _showActiveSessionDialog(BuildContext context) async {
+  final studentSessionService =
+      Provider.of<StudentSessionService>(context, listen: false);
+  final authService = Provider.of<AuthService>(context, listen: false);
+
   try {
-    final studentSessionService =
-        Provider.of<StudentSessionService>(context, listen: false);
-    final authService = Provider.of<AuthService>(context, listen: false);
-
     final userId = await authService.getCurrentUserIdAsync();
-    final session =
-        await studentSessionService.getStudentSessionByStudentId(userId);
+    final studentSession = await studentSessionService.getStudentSessionByStudentId(userId);
 
-    return !session.isFinished;
+    if (studentSession.isFinished) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Session Finished'),
+          content: const Text(
+              'You have finished your student session. Please wait for it to end before joining a new one.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
   } catch (e) {
-    debugPrint('Error checking active session: $e');
-    return false;
+    debugPrint('Error checking session status: $e');
   }
-}
 
-void _showActiveSessionDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(

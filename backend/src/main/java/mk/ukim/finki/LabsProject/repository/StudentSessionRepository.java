@@ -11,8 +11,7 @@ import java.util.UUID;
 @Repository
 public interface StudentSessionRepository extends JpaRepository<StudentSession, UUID> {
     List<StudentSession> findBySessionId(UUID sessionUuid);
-    StudentSession findStudentSessionById(UUID studentSessionUuid);
     boolean existsByStudentIdAndSessionId(UUID studentId, UUID sessionId);
     StudentSession findByStudentId(UUID studentId);
-    Optional<StudentSession> findByStudentIdAndSessionId(UUID studentId, UUID sessionId);
+    Optional<StudentSession> findByStudentIdAndId(UUID studentId, UUID studentSessionid);
 }

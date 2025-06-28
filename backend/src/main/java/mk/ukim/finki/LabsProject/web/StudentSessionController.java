@@ -45,7 +45,16 @@ public class StudentSessionController {
     public ResponseEntity<StudentSessionDTO> finishSession(@PathVariable String userId, @PathVariable String studentSessionId) {
         UUID userUuid = UUID.fromString(userId);
         UUID studentSessionUuid = UUID.fromString(studentSessionId);
-        StudentSessionDTO dto = studentSessionService.finishedByStudentIdAndStudentSessionId(userUuid, studentSessionUuid);
+        StudentSessionDTO dto = studentSessionService.finishSession(userUuid, studentSessionUuid);
+        return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/attendance/{userId}/{studentSessionId}")
+    @PreAuthorize("hasRole('PROFESSOR')")
+    public ResponseEntity<StudentSessionDTO> markAttendance(@PathVariable String userId, @PathVariable String studentSessionId) {
+        UUID userUuid = UUID.fromString(userId);
+        UUID studentSessionUuid = UUID.fromString(studentSessionId);
+        StudentSessionDTO dto = studentSessionService.markAttendance(userUuid, studentSessionUuid);
         return ResponseEntity.ok(dto);
     }
 

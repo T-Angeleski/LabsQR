@@ -54,9 +54,6 @@ class _SessionsScreenState extends State<SessionsScreen> {
 
   String _getSessionStatusText(Session session) {
     if (session.isExpired) {
-      return 'Expired';
-    }
-    if (_hasNoTimeLeft(session)) {
       return 'Finished';
     }
     return 'Active';

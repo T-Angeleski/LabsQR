@@ -9,13 +9,9 @@ import java.util.UUID;
 
 public interface StudentSessionService {
     StudentSessionDTO joinSession(UUID studentId, UUID sessionId);
-
-    StudentSessionDTO getStudentSessionById(UUID studentSessionId);
-
     List<StudentSessionDTO> getStudentSessionsBySessionId(UUID sessionUuid);
-
     Optional<StudentSession> findById(UUID studentSessionId);
     StudentSessionDTO getStudentSessionByStudentId(UUID studentId);
-    StudentSessionDTO finishedByStudentIdAndStudentSessionId(UUID studentId, UUID studentSessionId);
-    StudentSessionDTO markAttendance(UUID studentId, UUID sessionId);
+    StudentSessionDTO finishSession(UUID studentId, UUID studentSessionId);
+    StudentSessionDTO markAttendance(UUID studentId, UUID studentSessionId);
 }

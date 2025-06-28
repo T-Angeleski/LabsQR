@@ -47,4 +47,14 @@ class StudentSessionService {
     return handleResponse<StudentSession>(
       response, (data) => StudentSession.fromJson(data));
   }
+
+  Future<StudentSession> markAttendance(String userId, String sessionId) async {
+    final response = await makePostRequest(
+      'student-sessions/attendance/$userId/$sessionId',
+      {},
+    );
+    return handleResponse<StudentSession>(
+        response, (data) => StudentSession.fromJson(data));
+  }
+
 }

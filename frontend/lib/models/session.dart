@@ -32,7 +32,7 @@ class Session {
       createdAt: DateTime.parse(json['createdAt']),
       teacherName: json['teacherName'],
       subjectName: json['subjectName'],
-      isExpired: json['isExpired'] ?? false,
+      isExpired: json['expired'] ?? false,
       qrCode: base64Decode(json['qrCode']),
     );
   }

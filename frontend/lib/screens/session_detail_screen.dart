@@ -23,6 +23,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   final SessionManager _sessionManager = SessionManager();
+  final StudentSessionService _studentSessionService = StudentSessionService();
 
   @override
   void initState() {
@@ -67,25 +68,12 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
       _sessionTimer?.cancel();
 
       final authService = Provider.of<AuthService>(context, listen: false);
-      final studentSessionService =
-          Provider.of<StudentSessionService>(context, listen: false);
 
       final userId = await authService.getCurrentUserIdAsync();
 
-      final studentSession =
-          await studentSessionService.getStudentSessionByStudentId(userId);
+      final studentSession = await _studentSessionService.getStudentSessionByStudentId(userId);
 
-      if (studentSession == null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No active session found')),
-          );
-        }
-        return;
-      }
-
-      await studentSessionService.finishStudentSession(
-          userId, studentSession.id);
+      await _studentSessionService.finishStudentSession(userId, studentSession.id);
 
       debugPrint("Session finished: ${studentSession.id}");
 

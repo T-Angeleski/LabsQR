@@ -61,7 +61,7 @@ class StudentSession {
       studentId: json['studentId'] ?? '',
       joinedAt: DateTime.parse(json['joinedAt'] ?? '1970-01-01T00:00:00Z'),
       attendanceChecked: json['attendanceChecked'] ?? false,
-      isFinished: json['isFinished'] ?? false,
+      isFinished: json['finished'] ?? false,
       subjectName: json['subjectName'],
       studentName: json['studentName'],
       studentIndex: json['studentIndex'],
