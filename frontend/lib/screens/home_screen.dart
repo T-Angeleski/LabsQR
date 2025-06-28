@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/student_session.dart';
 import 'package:frontend/models/subject.dart';
 import 'package:frontend/screens/create_session_screen.dart';
 import 'package:frontend/screens/qr_scanner_screen.dart';
@@ -330,7 +331,21 @@ Future<void> _handleJoinSession(BuildContext context) async {
     final sessionService = Provider.of<SessionService>(context, listen: false);
 
     final userId = await authService.getCurrentUserIdAsync();
-    final studentSession = await studentSessionService.getStudentSessionByStudentId(userId);
+    final StudentSession studentSession;
+    try {
+      studentSession = await studentSessionService
+          .getStudentSessionByStudentId(userId);
+    }
+    catch (e) {
+      if (context.mounted) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const QrScannerScreen()),
+        );
+      }
+      return;
+    }
+
     final session = await sessionService.getSessionById(studentSession.sessionId);
     final created = session.createdAt;
     final duration = Duration(minutes: session.durationInMinutes);
@@ -362,7 +377,7 @@ Future<void> _handleJoinSession(BuildContext context) async {
 
 void _showActiveSessionDialog(BuildContext context) async {
   final studentSessionService =
-      Provider.of<StudentSessionService>(context, listen: false);
+  Provider.of<StudentSessionService>(context, listen: false);
   final authService = Provider.of<AuthService>(context, listen: false);
 
   try {
