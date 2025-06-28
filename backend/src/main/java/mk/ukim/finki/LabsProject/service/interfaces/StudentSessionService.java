@@ -14,4 +14,5 @@ public interface StudentSessionService {
     StudentSessionDTO getStudentSessionByStudentId(UUID studentId);
     StudentSessionDTO finishSession(UUID studentId, UUID studentSessionId);
     StudentSessionDTO markAttendance(UUID studentId, UUID studentSessionId);
+    StudentSessionDTO findByStudentIdAndSessionId(UUID studentId, UUID sessionId);
 }

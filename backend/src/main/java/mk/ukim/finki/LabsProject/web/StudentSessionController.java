@@ -40,6 +40,15 @@ public class StudentSessionController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/{userId}/{sessionId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<StudentSessionDTO> getStudentSessionByStudentIdAndSessionId(@PathVariable String userId, @PathVariable String sessionId) {
+        UUID userUuid = UUID.fromString(userId);
+        UUID sessionUuid = UUID.fromString(sessionId);
+        StudentSessionDTO dto = studentSessionService.findByStudentIdAndSessionId(userUuid, sessionUuid);
+        return ResponseEntity.ok(dto);
+    }
+
     @PostMapping("/finish/{userId}/{studentSessionId}")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<StudentSessionDTO> finishSession(@PathVariable String userId, @PathVariable String studentSessionId) {

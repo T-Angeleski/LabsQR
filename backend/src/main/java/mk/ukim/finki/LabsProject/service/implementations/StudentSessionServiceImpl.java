@@ -93,10 +93,22 @@ public class StudentSessionServiceImpl implements StudentSessionService {
         }
 
         StudentSession studentSession = studentSessionRepository.findByStudentIdAndId(studentId, studentSessionId)
-                .orElseThrow(() -> new EntityNotFoundException("StudentSession not found for given student and session"));
+                .orElseThrow(() -> new EntityNotFoundException("StudentSession not found for given student and student session"));
 
         studentSession.setAttendanceChecked(true);
         studentSessionRepository.save(studentSession);
+
+        return StudentSessionDTO.from(studentSession);
+    }
+
+    @Override
+    public StudentSessionDTO findByStudentIdAndSessionId(UUID studentId, UUID sessionId) {
+        if (studentId == null || sessionId == null) {
+            throw new IllegalArgumentException("Student ID and Session ID cannot be null");
+        }
+
+        StudentSession studentSession = studentSessionRepository.findByStudentIdAndSessionId(studentId, sessionId)
+            .orElseThrow(() -> new EntityNotFoundException("StudentSession not found for given student and session"));
 
         return StudentSessionDTO.from(studentSession);
     }
