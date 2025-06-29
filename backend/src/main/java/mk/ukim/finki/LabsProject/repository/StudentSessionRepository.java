@@ -15,4 +15,6 @@ public interface StudentSessionRepository extends JpaRepository<StudentSession, 
     Optional<StudentSession> findByStudentIdAndSessionId(UUID studentId, UUID sessionId);
     StudentSession findByStudentId(UUID studentId);
     Optional<StudentSession> findByStudentIdAndId(UUID studentId, UUID studentSessionid);
+
+    StudentSession findByStudentIdAndIsFinishedFalse(UUID studentId);
 }

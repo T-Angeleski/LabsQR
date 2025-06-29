@@ -6,6 +6,7 @@ import mk.ukim.finki.LabsProject.model.Session;
 import mk.ukim.finki.LabsProject.model.StudentSession;
 import mk.ukim.finki.LabsProject.model.User;
 import mk.ukim.finki.LabsProject.model.dto.StudentSessionDTO;
+import mk.ukim.finki.LabsProject.model.exceptions.NoActiveSessionForStudentException;
 import mk.ukim.finki.LabsProject.model.exceptions.StudentAlreadyInSessionException;
 import mk.ukim.finki.LabsProject.repository.SessionRepository;
 import mk.ukim.finki.LabsProject.repository.StudentSessionRepository;
@@ -63,13 +64,28 @@ public class StudentSessionServiceImpl implements StudentSessionService {
         return Optional.of(studentSession);
     }
 
-    public StudentSessionDTO getStudentSessionByStudentId(UUID studentId) {
-        if (studentId == null)
-            throw new IllegalArgumentException("Student ID cannot be null");
+//    public StudentSessionDTO getStudentSessionByStudentId(UUID studentId) {
+//        if (studentId == null)
+//            throw new IllegalArgumentException("Student ID cannot be null");
+//
+//        StudentSession studentSession = studentSessionRepository.findByStudentId(studentId);
+//        return StudentSessionDTO.from(studentSession);
+//    }
 
-        StudentSession studentSession = studentSessionRepository.findByStudentId(studentId);
+
+    public StudentSessionDTO getStudentSessionByStudentId(UUID studentId) {
+        if (studentId == null) {
+            throw new IllegalArgumentException("Student ID cannot be null");
+        }
+
+        StudentSession studentSession = studentSessionRepository.findByStudentIdAndIsFinishedFalse(studentId);
+        if (studentSession == null) {
+            throw new NoActiveSessionForStudentException("No active session found for student");
+        }
+
         return StudentSessionDTO.from(studentSession);
     }
+
 
     @Override
     public StudentSessionDTO finishSession(UUID studentId, UUID studentSessionId) {
