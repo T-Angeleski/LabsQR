@@ -391,13 +391,15 @@ Future<void> _handleJoinSession(BuildContext context) async {
 }
 
 void _showActiveSessionDialog(BuildContext context) async {
-  final studentSessionService =
-  Provider.of<StudentSessionService>(context, listen: false);
+  final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
   final authService = Provider.of<AuthService>(context, listen: false);
 
   try {
     final userId = await authService.getCurrentUserIdAsync();
-    await studentSessionService.getActiveStudentSessionByStudentId(userId);
+    final activeSession = await studentSessionService.getActiveStudentSessionByStudentId(userId);
+    final sessionService = Provider.of<SessionService>(context, listen: false);
+    final session = await sessionService.getSessionById(activeSession.sessionId);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -416,7 +418,10 @@ void _showActiveSessionDialog(BuildContext context) async {
                 context,
                 MaterialPageRoute(
                   builder: (context) => SessionDetailsScreen(
-                    subject: Subject(id: "id", name: "testing"),
+                    subject: Subject(
+                      id: session.subjectId,
+                      name: session.subjectName,
+                    ),
                   ),
                 ),
               );
