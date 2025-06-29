@@ -1,13 +1,47 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:frontend/auth/auth_service.dart';
 import 'package:frontend/models/student_session.dart';
 import 'package:frontend/service/student_session_service.dart';
 import 'package:frontend/util/date_util.dart';
 
 import 'package:frontend/models/grade.dart';
 import 'package:frontend/service/grade_service.dart';
+
+enum StudentFilter { all, present, absent, needsGrading, graded }
+
+extension StudentFilterExtension on StudentFilter {
+  String get displayName {
+    switch (this) {
+      case StudentFilter.all:
+        return 'All Students';
+      case StudentFilter.present:
+        return 'Present';
+      case StudentFilter.absent:
+        return 'Absent';
+      case StudentFilter.needsGrading:
+        return 'Needs Grading';
+      case StudentFilter.graded:
+        return 'Graded';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case StudentFilter.all:
+        return Icons.people_outline;
+      case StudentFilter.present:
+        return Icons.check_circle_outline;
+      case StudentFilter.absent:
+        return Icons.cancel_outlined;
+      case StudentFilter.needsGrading:
+        return Icons.flag_outlined;
+      case StudentFilter.graded:
+        return Icons.grade_outlined;
+    }
+  }
+}
+
 
 class StudentSessionsScreen extends StatefulWidget {
   final String sessionId;
@@ -20,6 +54,7 @@ class StudentSessionsScreen extends StatefulWidget {
 class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
   late Future<List<StudentSession>> _futureStudentSessions;
   final StudentSessionService _studentSessionService = StudentSessionService();
+  StudentFilter _activeFilter = StudentFilter.all;
 
   @override
   void initState() {
@@ -52,11 +87,11 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
     final currentGrade = session.grade;
 
     final pointsController =
-        TextEditingController(text: currentGrade?.points.toString() ?? '');
+    TextEditingController(text: currentGrade?.points.toString() ?? '');
     final maxPointsController =
-        TextEditingController(text: currentGrade?.maxPoints.toString() ?? '10');
+    TextEditingController(text: currentGrade?.maxPoints.toString() ?? '10');
     final noteController =
-        TextEditingController(text: currentGrade?.note ?? '');
+    TextEditingController(text: currentGrade?.note ?? '');
 
     final formKey = GlobalKey<FormState>();
 
@@ -93,7 +128,7 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                                 }
                                 final points = int.tryParse(value);
                                 final maxPoints =
-                                    int.tryParse(maxPointsController.text);
+                                int.tryParse(maxPointsController.text);
                                 if (points == null || points < 0) {
                                   return 'Invalid';
                                 }
@@ -139,51 +174,51 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
               actions: [
                 TextButton(
                   onPressed:
-                      isSubmitting ? null : () => Navigator.pop(context, null),
+                  isSubmitting ? null : () => Navigator.pop(context, null),
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
                   onPressed: isSubmitting
                       ? null
                       : () async {
-                          if (formKey.currentState!.validate()) {
-                            setState(() => isSubmitting = true);
-                            try {
-                              final grade =
-                                  await gradeService.createOrUpdateGrade(
-                                studentSessionId: session.id,
-                                points: int.parse(pointsController.text),
-                                maxPoints: int.parse(maxPointsController.text),
-                                note: noteController.text,
-                              );
-                              if (mounted) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
-                                  content: Text(
-                                      'Grade saved for ${session.displayName}'),
-                                  backgroundColor: Colors.green,
-                                ));
-                                Navigator.pop(context, grade);
-                              }
-                            } catch (e) {
-                              if (mounted) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
-                                  content: Text(
-                                      'Error: ${e.toString().replaceAll('Exception: ', '')}'),
-                                  backgroundColor: Colors.red,
-                                ));
-                                setState(() => isSubmitting = false);
-                              }
-                            }
-                          }
-                        },
+                    if (formKey.currentState!.validate()) {
+                      setState(() => isSubmitting = true);
+                      try {
+                        final grade =
+                        await gradeService.createOrUpdateGrade(
+                          studentSessionId: session.id,
+                          points: int.parse(pointsController.text),
+                          maxPoints: int.parse(maxPointsController.text),
+                          note: noteController.text,
+                        );
+                        if (mounted) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(
+                            content: Text(
+                                'Grade saved for ${session.displayName}'),
+                            backgroundColor: Colors.green,
+                          ));
+                          Navigator.pop(context, grade);
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(
+                            content: Text(
+                                'Error: ${e.toString().replaceAll('Exception: ', '')}'),
+                            backgroundColor: Colors.red,
+                          ));
+                          setState(() => isSubmitting = false);
+                        }
+                      }
+                    }
+                  },
                   child: isSubmitting
                       ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white))
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white))
                       : const Text('Save'),
                 ),
               ],
@@ -236,7 +271,7 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
       ),
       backgroundColor: Theme.of(context).primaryColor.withOpacity(0.15),
       avatar:
-          Icon(Icons.grade, size: 16, color: Theme.of(context).primaryColor),
+      Icon(Icons.grade, size: 16, color: Theme.of(context).primaryColor),
     );
   }
 
@@ -255,6 +290,11 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
   }
 
   Widget _buildStudentCard(StudentSession session, int index) {
+    const finishedIcon = Tooltip(
+      message: 'Finished',
+      child: Icon(Icons.flag, color: Colors.teal, size: 18),
+    );
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       clipBehavior: Clip.antiAlias,
@@ -267,8 +307,22 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.bold)),
         ),
-        title: Text(session.displayName,
-            style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Text(
+                session.displayName,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (session.isFinished) ...[
+              const SizedBox(width: 8),
+              finishedIcon,
+            ],
+          ],
+        ),
         subtitle: Text(
             session.studentIndex ?? session.displayEmail ?? 'No identifier'),
         trailing: _buildGradeChip(session.grade),
@@ -284,7 +338,7 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                     children: [
                       Text('Joined: ${formatDate(session.joinedAt)}',
                           style:
-                              TextStyle(fontSize: 12, color: Colors.grey[700])),
+                          TextStyle(fontSize: 12, color: Colors.grey[700])),
                       if (session.grade?.note?.isNotEmpty ?? false) ...[
                         const SizedBox(height: 8),
                         Text('Note: ${session.grade!.note}',
@@ -353,12 +407,38 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
             final presentCount =
                 sessions.where((s) => s.attendanceChecked).length;
             final gradedCount = sessions.where((s) => s.grade != null).length;
-            final finishedCount = sessions.where((s) => s.isFinished).length;
+
+            final needsGradingCount =
+                sessions.where((s) => s.isFinished && s.grade == null).length;
+
+            final List<StudentSession> filteredSessions;
+            switch (_activeFilter) {
+              case StudentFilter.present:
+                filteredSessions =
+                    sessions.where((s) => s.attendanceChecked).toList();
+                break;
+              case StudentFilter.absent:
+                filteredSessions =
+                    sessions.where((s) => !s.attendanceChecked).toList();
+                break;
+              case StudentFilter.needsGrading:
+                filteredSessions = sessions
+                    .where((s) => s.isFinished && s.grade == null)
+                    .toList();
+                break;
+              case StudentFilter.graded:
+                filteredSessions =
+                    sessions.where((s) => s.grade != null).toList();
+                break;
+              case StudentFilter.all:
+                filteredSessions = sessions;
+                break;
+            }
 
             return Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(12),
                   color: Theme.of(context)
                       .colorScheme
                       .surfaceVariant
@@ -366,30 +446,40 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildStatCard('Total', '${sessions.length}',
-                          Icons.people, Colors.blue),
-                      _buildStatCard('Present', '$presentCount',
-                          Icons.check_circle, Colors.green),
-                      _buildStatCard(
-                          'Absent', '${sessions.length - presentCount}',
-                          Icons.access_time_filled_outlined, Colors.red),
-                      _buildStatCard('Finished', '$finishedCount',
-                          Icons.flag, Colors.teal),
-                      _buildStatCard(
-                          'Graded', '$gradedCount',
-                          Icons.grade, Colors.purple),
+                      _buildFilterableStatCard('Total', '${sessions.length}',
+                          Icons.people, Colors.blue, StudentFilter.all),
+                      _buildFilterableStatCard('Present', '$presentCount',
+                          Icons.check_circle, Colors.green, StudentFilter.present),
+                      _buildFilterableStatCard(
+                          'Absent',
+                          '${sessions.length - presentCount}',
+                          Icons.cancel,
+                          Colors.red,
+                          StudentFilter.absent),
+                      _buildFilterableStatCard(
+                          'Needs Grading',
+                          '$needsGradingCount',
+                          Icons.flag,
+                          Colors.teal,
+                          StudentFilter.needsGrading),
+                      _buildFilterableStatCard('Graded', '$gradedCount',
+                          Icons.grade, Colors.purple, StudentFilter.graded),
                     ],
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
+                  child: filteredSessions.isEmpty
+                      ? _buildNoStudentsMatchFilterMessage()
+                      : ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: sessions.length,
+                    itemCount: filteredSessions.length,
                     itemBuilder: (context, index) {
-                      return _buildStudentCard(sessions[index], index);
+                      return _buildStudentCard(
+                          filteredSessions[index], index);
                     },
                   ),
                 ),
+
               ],
             );
           },
@@ -412,4 +502,103 @@ class _StudentSessionsScreenState extends State<StudentSessionsScreen> {
       ],
     );
   }
+
+  Widget _buildFilterableStatCard(
+      String title, String value, IconData icon, Color color, StudentFilter filter) {
+    final bool isActive = _activeFilter == filter;
+
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _activeFilter = isActive ? StudentFilter.all : filter;
+        });
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? color.withOpacity(0.25) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 4),
+            Text(value,
+                style: TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.bold, color: color)),
+            Text(title,
+                style: TextStyle(fontSize: 12, color: color.withOpacity(0.9))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoStudentsMatchFilterMessage() {
+    if (_activeFilter == StudentFilter.all) {
+      return const Center(
+        child: Text(
+          'No students have joined this session yet.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(32.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              _activeFilter.icon,
+              size: 72,
+              color: Colors.grey.shade400,
+            ),
+            const SizedBox(height: 24),
+
+            Text(
+              'No "${_activeFilter.displayName}" Students',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade800,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            Text(
+              'There are no students that match this filter. Try selecting a different category.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
+                  _activeFilter = StudentFilter.all;
+                });
+              },
+              icon: const Icon(Icons.people_alt_outlined),
+              label: const Text('Show All Students'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).primaryColor,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                textStyle: const TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
 }
