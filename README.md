@@ -103,4 +103,4 @@ flutter run
 - **StudentSessions**: A session that a student has joined
 - **Grades**: Student grades and feedback for a student in a session
 
-![DB Image](DB_Diagram.png)
+![Db_Diagram](DB_Diagram.png)
