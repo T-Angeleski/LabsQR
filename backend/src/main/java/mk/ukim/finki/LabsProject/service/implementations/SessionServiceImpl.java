@@ -34,6 +34,16 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    public List<SessionDTO> getActiveSessions() {
+        List<Session> sessions = sessionRepository.findAll().stream()
+                .filter(session -> session.getCreatedAt()
+                        .plusMinutes(session.getDurationInMinutes())
+                        .isAfter(LocalDateTime.now()))
+                .toList();
+        return SessionDTO.from(sessions);
+    }
+
+    @Override
     public SessionDTO createSession(CreateSessionRequestDTO requestDTO) {
         if (requestDTO == null || requestDTO.getDurationInMinutes() == null || requestDTO.getSubjectId() == null) {
             throw new IllegalArgumentException("Duration and Subject ID are required.");

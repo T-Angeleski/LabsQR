@@ -64,16 +64,16 @@ public class StudentSessionServiceImpl implements StudentSessionService {
         return Optional.of(studentSession);
     }
 
-//    public StudentSessionDTO getStudentSessionByStudentId(UUID studentId) {
-//        if (studentId == null)
-//            throw new IllegalArgumentException("Student ID cannot be null");
-//
-//        StudentSession studentSession = studentSessionRepository.findByStudentId(studentId);
-//        return StudentSessionDTO.from(studentSession);
-//    }
-
-
     public StudentSessionDTO getStudentSessionByStudentId(UUID studentId) {
+        if (studentId == null)
+            throw new IllegalArgumentException("Student ID cannot be null");
+
+        StudentSession studentSession = studentSessionRepository.findByStudentId(studentId);
+        return StudentSessionDTO.from(studentSession);
+    }
+
+
+    public StudentSessionDTO getStudentSessionByStudentIdAndIsFinishedFalse(UUID studentId) {
         if (studentId == null) {
             throw new IllegalArgumentException("Student ID cannot be null");
         }

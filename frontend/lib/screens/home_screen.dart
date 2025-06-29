@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/session.dart';
 import 'package:frontend/models/student_session.dart';
 import 'package:frontend/models/subject.dart';
 import 'package:frontend/screens/create_session_screen.dart';
@@ -325,18 +326,32 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
 Future<void> _handleJoinSession(BuildContext context) async {
   try {
-    final studentSessionService =
-    Provider.of<StudentSessionService>(context, listen: false);
+    final studentSessionService = Provider.of<StudentSessionService>(context, listen: false);
     final authService = Provider.of<AuthService>(context, listen: false);
     final sessionService = Provider.of<SessionService>(context, listen: false);
 
     final userId = await authService.getCurrentUserIdAsync();
-    final StudentSession studentSession;
-    try {
-      studentSession = await studentSessionService
-          .getStudentSessionByStudentId(userId);
+
+    final List<Session> activeSessions = await sessionService.fetchActiveSessions();
+    Session? sessionVar;
+
+    StudentSession? studentSession;
+    for (final session in activeSessions) {
+      final List<StudentSession> studentSessions = await studentSessionService.fetchStudentSessions(session.id);
+      for (final s in studentSessions) {
+        if (s.studentId == userId) {
+          studentSession = s;
+          sessionVar = session;
+          break;
+        }
+      }
+      if (studentSession != null) {
+        break;
+      }
     }
-    catch (e) {
+
+    if (studentSession == null)
+      {
       if (context.mounted) {
         await Navigator.push(
           context,
@@ -346,14 +361,14 @@ Future<void> _handleJoinSession(BuildContext context) async {
       return;
     }
 
-    final session = await sessionService.getSessionById(studentSession.sessionId);
-    final created = session.createdAt;
-    final duration = Duration(minutes: session.durationInMinutes);
-    final now = DateTime.now();
-    final end = created.add(duration);
-    final timeLeft = end.difference(now);
+    // final session = await sessionService.getSessionById(studentSession.sessionId);
+    // final created = sessionVar?.createdAt;
+    // final duration = Duration(minutes: sessionVar!.durationInMinutes);
+    // final now = DateTime.now();
+    // final end = created?.add(duration);
+    // final timeLeft = end?.difference(now);
 
-    if (timeLeft.inMinutes > 0) {
+    if (sessionVar != null) {
       if (context.mounted) {
         _showActiveSessionDialog(context);
       }
@@ -382,55 +397,50 @@ void _showActiveSessionDialog(BuildContext context) async {
 
   try {
     final userId = await authService.getCurrentUserIdAsync();
-    final studentSession = await studentSessionService.getStudentSessionByStudentId(userId);
-
-    if (studentSession.isFinished) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Session Finished'),
-          content: const Text(
-              'You have finished your student session. Please wait for it to end before joining a new one.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
-  } catch (e) {
-    debugPrint('Error checking session status: $e');
-  }
-
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Active Session Found'),
-      content: const Text(
-          'You already have an active session. Please end it before joining a new one.'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('OK'),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SessionDetailsScreen(
-                  subject: Subject(id: "id", name: "testing"),
+    await studentSessionService.getActiveStudentSessionByStudentId(userId);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Active Session Found'),
+        content: const Text(
+            'You already have an active session. Please end it before joining a new one.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SessionDetailsScreen(
+                    subject: Subject(id: "id", name: "testing"),
+                  ),
                 ),
-              ),
-            );
-          },
-          child: const Text('View Session'),
-        ),
-      ],
-    ),
-  );
+              );
+            },
+            child: const Text('View Session'),
+          ),
+        ],
+      ),
+    );
+  } catch (e) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Session Finished'),
+        content: const Text(
+            'You have finished your student session. Please wait for it to end before joining a new one.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+    return;
+  }
 }

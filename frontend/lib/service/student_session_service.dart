@@ -39,6 +39,12 @@ class StudentSessionService {
         response, (data) => StudentSession.fromJson(data));
   }
 
+  Future<StudentSession> getActiveStudentSessionByStudentId(String userId) async {
+    final response = await makeGetRequest('student-sessions/user/$userId/active');
+    return handleResponse<StudentSession>(
+        response, (data) => StudentSession.fromJson(data));
+  }
+
   Future<StudentSession> finishStudentSession(String userId, String studentSessionId) async {
     final response = await makePostRequest(
       'student-sessions/finish/$userId/$studentSessionId',

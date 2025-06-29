@@ -9,6 +9,8 @@ import java.util.UUID;
 public interface SessionService {
     List<SessionDTO> getAllSessions();
 
+    List<SessionDTO> getActiveSessions();
+
     SessionDTO createSession(CreateSessionRequestDTO requestDTO);
 
     SessionDTO getSessionById(UUID sessionId);

@@ -40,6 +40,14 @@ public class StudentSessionController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/user/{userId}/active")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<StudentSessionDTO> getActiveStudentSessionByUser(@PathVariable String userId) {
+        UUID userUuid = UUID.fromString(userId);
+        StudentSessionDTO dto = studentSessionService.getStudentSessionByStudentIdAndIsFinishedFalse(userUuid);
+        return ResponseEntity.ok(dto);
+    }
+
     @GetMapping("/{userId}/{sessionId}")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<StudentSessionDTO> getStudentSessionByStudentIdAndSessionId(@PathVariable String userId, @PathVariable String sessionId) {

@@ -12,6 +12,7 @@ public interface StudentSessionService {
     List<StudentSessionDTO> getStudentSessionsBySessionId(UUID sessionUuid);
     Optional<StudentSession> findById(UUID studentSessionId);
     StudentSessionDTO getStudentSessionByStudentId(UUID studentId);
+    StudentSessionDTO getStudentSessionByStudentIdAndIsFinishedFalse(UUID studentId);
     StudentSessionDTO finishSession(UUID studentId, UUID studentSessionId);
     StudentSessionDTO markAttendance(UUID studentId, UUID studentSessionId);
     StudentSessionDTO findByStudentIdAndSessionId(UUID studentId, UUID sessionId);

@@ -28,6 +28,12 @@ public class SessionController {
         return ResponseEntity.ok(sessionService.getAllSessions());
     }
 
+    @GetMapping("/sessions/active")
+    @Operation(summary = "Get active sessions", description = "Returns a list of currently active sessions")
+    public ResponseEntity<List<SessionDTO>> getActiveSessions() {
+        return ResponseEntity.ok(sessionService.getActiveSessions());
+    }
+
 //    @PreAuthorize("hasRole('PROFESSOR')")
     @GetMapping("/{sessionId}")
     public ResponseEntity<SessionDTO> getSession(@PathVariable UUID sessionId) {

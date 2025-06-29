@@ -32,4 +32,10 @@ class SessionService {
     return handleResponse<List<Session>>(
         response, (data) => parseListResponse(data, Session.fromJson));
   }
+
+  Future<List<Session>> fetchActiveSessions() async {
+      final response = await makeGetRequest('sessions/active');
+      return handleResponse<List<Session>>(
+          response, (data) => parseListResponse(data, Session.fromJson));
+    }
 }

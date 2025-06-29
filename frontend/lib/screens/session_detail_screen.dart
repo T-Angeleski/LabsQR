@@ -71,7 +71,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen>
 
       final userId = await authService.getCurrentUserIdAsync();
 
-      final studentSession = await _studentSessionService.getStudentSessionByStudentId(userId);
+      final studentSession = await _studentSessionService.getActiveStudentSessionByStudentId(userId);
 
       await _studentSessionService.finishStudentSession(userId, studentSession.id);
 
